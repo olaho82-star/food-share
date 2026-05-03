@@ -14,18 +14,29 @@ const LONDON_BOROUGHS = [
 
 export async function getListings(req: AuthRequest, res: Response) {
   const { status } = req.query;
+
+  if (req.userRole === 'recipient') {
+    const query: Record<string, unknown> = { claimedBy: req.userId };
+    if (status) query.status = status;
+    const listings = await Listing.find(query).sort({ claimedAt: -1 });
+    res.json({ listings });
+    return;
+  }
+
   const query: Record<string, unknown> = { donorId: req.userId };
-  if (status) query.status = status;
+  if (status) {
+    const statuses = (status as string).split(',');
+    query.status = { $in: statuses };
+  }
   const listings = await Listing.find(query).sort({ createdAt: -1 });
   res.json({ listings });
 }
 
 export async function getNearbyListings(req: AuthRequest, res: Response) {
-  const { lat, lng, radius = 5 } = req.query;
   const listings = await Listing.find({ status: 'available' })
     .select('-fullAddress')
     .sort({ createdAt: -1 })
-    .limit(50);
+    .limit(100);
   res.json({ listings });
 }
 

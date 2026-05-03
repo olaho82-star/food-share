@@ -5,6 +5,9 @@ import { Text } from 'react-native';
 import { RecipientTabParamList, RecipientHomeStackParamList, MessagesStackParamList, ProfileStackParamList } from './types';
 import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
 import { Colors } from '../constants/colors';
+import { HomeScreen } from '../screens/recipient/HomeScreen';
+import { ListingDetailScreen } from '../screens/recipient/ListingDetailScreen';
+import { ClaimConfirmedScreen } from '../screens/recipient/ClaimConfirmedScreen';
 
 const Tab = createBottomTabNavigator<RecipientTabParamList>();
 const HomeStack = createNativeStackNavigator<RecipientHomeStackParamList>();
@@ -14,9 +17,9 @@ const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 function RecipientHomeStackNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerStyle: { backgroundColor: Colors.primaryYellow }, headerTintColor: Colors.darkBrown, headerShadowVisible: false }}>
-      <HomeStack.Screen name="HomeMap" options={{ title: 'Find food' }} children={() => <PlaceholderScreen name="Home Map" />} />
-      <HomeStack.Screen name="ListingDetail" options={{ title: 'Listing' }} children={() => <PlaceholderScreen name="Listing Detail" />} />
-      <HomeStack.Screen name="ClaimConfirmed" options={{ headerShown: false }} children={() => <PlaceholderScreen name="Claim Confirmed" />} />
+      <HomeStack.Screen name="HomeMap" component={HomeScreen} options={{ title: 'Find food near you' }} />
+      <HomeStack.Screen name="ListingDetail" component={ListingDetailScreen} options={{ title: 'Listing' }} />
+      <HomeStack.Screen name="ClaimConfirmed" component={ClaimConfirmedScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name="VoluntaryDonation" options={{ title: 'Leave a donation' }} children={() => <PlaceholderScreen name="Voluntary Donation" />} />
       <HomeStack.Screen name="RateExchange" options={{ title: 'Rate this exchange' }} children={() => <PlaceholderScreen name="Rate Exchange" />} />
     </HomeStack.Navigator>
