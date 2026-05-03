@@ -1,8 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { OnboardingStackParamList } from './types';
-import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
 import { Colors } from '../constants/colors';
+import { RoleSelectionScreen } from '../screens/onboarding/RoleSelectionScreen';
+import { SignUpScreen } from '../screens/auth/SignUpScreen';
+import { SignInScreen } from '../screens/auth/SignInScreen';
+import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { ResetSentScreen } from '../screens/auth/ResetSentScreen';
 
 const Stack = createNativeStackNavigator<OnboardingStackParamList>();
 
@@ -16,31 +20,11 @@ export function OnboardingNavigator() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
-        name="RoleSelection"
-        options={{ title: 'Join FoodShare', headerShown: false }}
-        children={() => <PlaceholderScreen name="Role Selection" />}
-      />
-      <Stack.Screen
-        name="SignUp"
-        options={{ title: 'Create account' }}
-        children={() => <PlaceholderScreen name="Sign Up" />}
-      />
-      <Stack.Screen
-        name="SignIn"
-        options={{ title: 'Sign in' }}
-        children={() => <PlaceholderScreen name="Sign In" />}
-      />
-      <Stack.Screen
-        name="ForgotPassword"
-        options={{ title: 'Reset password' }}
-        children={() => <PlaceholderScreen name="Forgot Password" />}
-      />
-      <Stack.Screen
-        name="ResetSent"
-        options={{ title: 'Check your inbox' }}
-        children={() => <PlaceholderScreen name="Reset Email Sent" />}
-      />
+      <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Create account' }} />
+      <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign in' }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: 'Reset password' }} />
+      <Stack.Screen name="ResetSent" component={ResetSentScreen} options={{ title: 'Check your inbox' }} />
     </Stack.Navigator>
   );
 }
