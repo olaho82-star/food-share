@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
+import listingRoutes from './routes/listing.routes';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/listings', listingRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });

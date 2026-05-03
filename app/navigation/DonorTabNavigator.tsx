@@ -5,6 +5,11 @@ import { Text } from 'react-native';
 import { DonorTabParamList, DonorHomeStackParamList, MessagesStackParamList, ProfileStackParamList } from './types';
 import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
 import { Colors } from '../constants/colors';
+import { MyListingsScreen } from '../screens/donor/MyListingsScreen';
+import { CreateStep1Screen } from '../screens/donor/CreateStep1Screen';
+import { CreateStep2Screen } from '../screens/donor/CreateStep2Screen';
+import { CreateStep3Screen } from '../screens/donor/CreateStep3Screen';
+import { ListingSuccessScreen } from '../screens/donor/ListingSuccessScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -14,11 +19,11 @@ const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 function DonorHomeStackNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerStyle: { backgroundColor: Colors.primaryYellow }, headerTintColor: Colors.darkBrown, headerShadowVisible: false }}>
-      <HomeStack.Screen name="MyListings" options={{ title: 'My Listings' }} children={() => <PlaceholderScreen name="My Listings" />} />
-      <HomeStack.Screen name="CreateStep1" options={{ title: 'Post food (1/3)' }} children={() => <PlaceholderScreen name="Create Listing — Details" />} />
-      <HomeStack.Screen name="CreateStep2" options={{ title: 'Post food (2/3)' }} children={() => <PlaceholderScreen name="Create Listing — Pick-up" />} />
-      <HomeStack.Screen name="CreateStep3" options={{ title: 'Post food (3/3)' }} children={() => <PlaceholderScreen name="Create Listing — Review" />} />
-      <HomeStack.Screen name="ListingSuccess" options={{ headerShown: false }} children={() => <PlaceholderScreen name="Listing Published" />} />
+      <HomeStack.Screen name="MyListings" component={MyListingsScreen} options={{ title: 'My Listings' }} />
+      <HomeStack.Screen name="CreateStep1" component={CreateStep1Screen} options={{ title: 'Post food (1/3)' }} />
+      <HomeStack.Screen name="CreateStep2" component={CreateStep2Screen} options={{ title: 'Post food (2/3)' }} />
+      <HomeStack.Screen name="CreateStep3" component={CreateStep3Screen} options={{ title: 'Post food (3/3)' }} />
+      <HomeStack.Screen name="ListingSuccess" component={ListingSuccessScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name="MarkCollected" options={{ title: 'Mark collected' }} children={() => <PlaceholderScreen name="Mark Collected" />} />
     </HomeStack.Navigator>
   );
