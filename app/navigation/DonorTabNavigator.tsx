@@ -10,6 +10,7 @@ import { CreateStep1Screen } from '../screens/donor/CreateStep1Screen';
 import { CreateStep2Screen } from '../screens/donor/CreateStep2Screen';
 import { CreateStep3Screen } from '../screens/donor/CreateStep3Screen';
 import { ListingSuccessScreen } from '../screens/donor/ListingSuccessScreen';
+import { MarkCollectedScreen } from '../screens/donor/MarkCollectedScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -24,7 +25,7 @@ function DonorHomeStackNavigator() {
       <HomeStack.Screen name="CreateStep2" component={CreateStep2Screen} options={{ title: 'Post food (2/3)' }} />
       <HomeStack.Screen name="CreateStep3" component={CreateStep3Screen} options={{ title: 'Post food (3/3)' }} />
       <HomeStack.Screen name="ListingSuccess" component={ListingSuccessScreen} options={{ headerShown: false }} />
-      <HomeStack.Screen name="MarkCollected" options={{ title: 'Mark collected' }} children={() => <PlaceholderScreen name="Mark Collected" />} />
+      <HomeStack.Screen name="MarkCollected" component={MarkCollectedScreen} options={{ title: 'Mark collected' }} />
     </HomeStack.Navigator>
   );
 }

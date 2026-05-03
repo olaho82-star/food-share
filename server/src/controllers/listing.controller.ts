@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { Listing } from '../models/listing.model';
 import { User } from '../models/user.model';
+import { Exchange } from '../models/exchange.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 
 const LONDON_BOROUGHS = [
@@ -32,7 +33,7 @@ export async function getListings(req: AuthRequest, res: Response) {
   res.json({ listings });
 }
 
-export async function getNearbyListings(req: AuthRequest, res: Response) {
+export async function getNearbyListings(_req: AuthRequest, res: Response) {
   const listings = await Listing.find({ status: 'available' })
     .select('-fullAddress')
     .sort({ createdAt: -1 })
@@ -44,7 +45,7 @@ export async function getListing(req: AuthRequest, res: Response) {
   const listing = await Listing.findById(req.params.id).populate('donorId', 'name rating ratingCount');
   if (!listing) { res.status(404).json({ message: 'Listing not found' }); return; }
 
-  const listingObj = listing.toObject() as Record<string, unknown>;
+  const listingObj = listing.toObject() as unknown as Record<string, unknown>;
   const isClaimant = listing.claimedBy && String(listing.claimedBy) === req.userId;
   if (!isClaimant) {
     delete listingObj.fullAddress;
@@ -107,10 +108,18 @@ export async function claimListing(req: AuthRequest, res: Response) {
   if (!listing) { res.status(404).json({ message: 'Listing not found' }); return; }
   if (listing.status !== 'available') { res.status(400).json({ message: 'This listing is no longer available' }); return; }
 
+  const claimedAt = new Date();
   listing.status = 'claimed';
   listing.claimedBy = req.userId as unknown as typeof listing.claimedBy;
-  listing.claimedAt = new Date();
+  listing.claimedAt = claimedAt;
   await listing.save();
+
+  await Exchange.create({
+    listingId: listing._id,
+    donorId: listing.donorId,
+    recipientId: req.userId,
+    claimedAt,
+  });
 
   res.json({ listing });
 }
@@ -122,6 +131,12 @@ export async function markCollected(req: AuthRequest, res: Response) {
 
   listing.status = 'pending-confirmation';
   await listing.save();
+
+  await Exchange.findOneAndUpdate(
+    { listingId: listing._id },
+    { status: 'pending-confirmation', donorMarkedCollectedAt: new Date() }
+  );
+
   res.json({ listing });
 }
 
@@ -131,8 +146,14 @@ export async function confirmCollection(req: AuthRequest, res: Response) {
   if (String(listing.claimedBy) !== req.userId) { res.status(403).json({ message: 'Forbidden' }); return; }
   if (listing.status !== 'pending-confirmation') { res.status(400).json({ message: 'Listing is not awaiting confirmation' }); return; }
 
+  const now = new Date();
   listing.status = 'completed';
   await listing.save();
+
+  await Exchange.findOneAndUpdate(
+    { listingId: listing._id },
+    { status: 'completed', recipientConfirmedAt: now }
+  );
 
   await User.findByIdAndUpdate(req.userId, { $inc: { collectionsCount: 1 } });
   res.json({ listing });

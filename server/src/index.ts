@@ -5,6 +5,8 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import listingRoutes from './routes/listing.routes';
+import exchangeRoutes from './routes/exchange.routes';
+import { startScheduler } from './services/scheduler';
 
 dotenv.config();
 
@@ -23,6 +25,7 @@ app.use('/api', limiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
+app.use('/api/exchanges', exchangeRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
@@ -32,6 +35,7 @@ mongoose
   .connect(process.env.MONGODB_URI!)
   .then(() => {
     console.log('Connected to MongoDB');
+    startScheduler();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => {
