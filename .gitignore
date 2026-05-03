@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Expo
+app/.expo/
+app/dist/
+app/web-build/
+
+# Environment variables — never commit these
+.env
+.env.local
+.env.production
+
+# Native builds
+app/android/
+app/ios/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
