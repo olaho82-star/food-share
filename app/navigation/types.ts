@@ -32,6 +32,7 @@ export type MessagesStackParamList = {
 
 export type ProfileStackParamList = {
   Profile: undefined;
+  EditProfile: undefined;
   CommunityGuidelines: undefined;
 };
 

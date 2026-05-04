@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text } from 'react-native';
 import { DonorTabParamList, DonorHomeStackParamList, MessagesStackParamList, ProfileStackParamList } from './types';
-import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
 import { Colors } from '../constants/colors';
 import { MyListingsScreen } from '../screens/donor/MyListingsScreen';
 import { CreateStep1Screen } from '../screens/donor/CreateStep1Screen';
@@ -14,6 +13,9 @@ import { MarkCollectedScreen } from '../screens/donor/MarkCollectedScreen';
 import { MessageInboxScreen } from '../screens/shared/MessageInboxScreen';
 import { ChatThreadScreen } from '../screens/shared/ChatThreadScreen';
 import { NotificationsScreen } from '../screens/shared/NotificationsScreen';
+import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
+import { CommunityGuidelinesScreen } from '../screens/profile/CommunityGuidelinesScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -45,8 +47,9 @@ function MessagesStackNavigator() {
 function ProfileStackNavigator() {
   return (
     <ProfileStack.Navigator screenOptions={{ headerStyle: { backgroundColor: Colors.primaryYellow }, headerTintColor: Colors.darkBrown, headerShadowVisible: false }}>
-      <ProfileStack.Screen name="Profile" options={{ title: 'Profile' }} children={() => <PlaceholderScreen name="Profile" />} />
-      <ProfileStack.Screen name="CommunityGuidelines" options={{ title: 'Community Guidelines' }} children={() => <PlaceholderScreen name="Community Guidelines" />} />
+      <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+      <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit profile' }} />
+      <ProfileStack.Screen name="CommunityGuidelines" component={CommunityGuidelinesScreen} options={{ title: 'Community Guidelines' }} />
     </ProfileStack.Navigator>
   );
 }
