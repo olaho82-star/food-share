@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +8,8 @@ import { RootNavigator } from './navigation/RootNavigator';
 import { useAuthStore } from './store/authStore';
 import { storage } from './utils/storage';
 import { registerForPushNotifications } from './utils/notifications';
+import { ErrorBoundary } from './components/layout/ErrorBoundary';
+import { OfflineBanner } from './components/layout/OfflineBanner';
 
 const STRIPE_KEY = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
 
@@ -34,13 +37,22 @@ export default function App() {
   }, []);
 
   return (
-    <StripeProvider publishableKey={STRIPE_KEY}>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <StatusBar style="dark" />
-          <RootNavigator />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </StripeProvider>
+    <ErrorBoundary>
+      <StripeProvider publishableKey={STRIPE_KEY}>
+        <SafeAreaProvider>
+          <View style={styles.root}>
+            <NavigationContainer>
+              <StatusBar style="dark" />
+              <RootNavigator />
+            </NavigationContainer>
+            <OfflineBanner />
+          </View>
+        </SafeAreaProvider>
+      </StripeProvider>
+    </ErrorBoundary>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});

@@ -28,3 +28,8 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# EAS / Google Play submission
+google-service-account.json
+*.p8
+*.mobileprovision

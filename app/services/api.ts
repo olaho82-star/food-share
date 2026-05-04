@@ -1,6 +1,7 @@
 import { storage } from '../utils/storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+const TIMEOUT_MS = 15000;
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const stored = await storage.loadAuth();
@@ -12,13 +13,32 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers['Authorization'] = `Bearer ${stored.accessToken}`;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
-  const data = await res.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  if (!res.ok) {
-    throw new Error(data.message || 'Something went wrong');
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Something went wrong');
+    }
+    return data as T;
+  } catch (err: any) {
+    clearTimeout(timeout);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    if (err.message === 'Network request failed') {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+    throw err;
   }
-  return data as T;
 }
 
 export const api = {
