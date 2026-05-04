@@ -8,6 +8,8 @@ import { Colors } from '../constants/colors';
 import { HomeScreen } from '../screens/recipient/HomeScreen';
 import { ListingDetailScreen } from '../screens/recipient/ListingDetailScreen';
 import { ClaimConfirmedScreen } from '../screens/recipient/ClaimConfirmedScreen';
+import { VoluntaryDonationScreen } from '../screens/recipient/VoluntaryDonationScreen';
+import { RateExchangeScreen } from '../screens/recipient/RateExchangeScreen';
 import { MyClaimsScreen } from '../screens/recipient/MyClaimsScreen';
 import { MessageInboxScreen } from '../screens/shared/MessageInboxScreen';
 import { ChatThreadScreen } from '../screens/shared/ChatThreadScreen';
@@ -24,8 +26,8 @@ function RecipientHomeStackNavigator() {
       <HomeStack.Screen name="HomeMap" component={HomeScreen} options={{ title: 'Find food near you' }} />
       <HomeStack.Screen name="ListingDetail" component={ListingDetailScreen} options={{ title: 'Listing' }} />
       <HomeStack.Screen name="ClaimConfirmed" component={ClaimConfirmedScreen} options={{ headerShown: false }} />
-      <HomeStack.Screen name="VoluntaryDonation" options={{ title: 'Leave a donation' }} children={() => <PlaceholderScreen name="Voluntary Donation" />} />
-      <HomeStack.Screen name="RateExchange" options={{ title: 'Rate this exchange' }} children={() => <PlaceholderScreen name="Rate Exchange" />} />
+      <HomeStack.Screen name="VoluntaryDonation" component={VoluntaryDonationScreen} options={{ title: 'Leave a donation' }} />
+      <HomeStack.Screen name="RateExchange" component={RateExchangeScreen} options={{ title: 'Rate this exchange' }} />
     </HomeStack.Navigator>
   );
 }

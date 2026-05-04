@@ -33,7 +33,10 @@
           "apiKey": "AIzaSyBXwuaCqvL03XGToZof3tfcRljgAAUITKI"
         }
       },
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -45,7 +48,8 @@
         {
           "locationWhenInUsePermission": "FoodShare uses your location to show food listings near you."
         }
-      ]
+      ],
+      "@stripe/stripe-react-native"
     ]
   }
 }

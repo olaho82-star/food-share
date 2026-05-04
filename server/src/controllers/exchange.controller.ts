@@ -1,8 +1,12 @@
 import { Response } from 'express';
+import Stripe from 'stripe';
 import { Exchange } from '../models/exchange.model';
 import { Listing } from '../models/listing.model';
 import { User } from '../models/user.model';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { sendNotification } from '../services/push.service';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function getExchanges(req: AuthRequest, res: Response) {
   const field = req.userRole === 'donor' ? 'donorId' : 'recipientId';
@@ -23,8 +27,33 @@ export async function getExchange(req: AuthRequest, res: Response) {
   res.json({ exchange });
 }
 
-export async function submitDonation(req: AuthRequest, res: Response) {
+export async function createPaymentIntent(req: AuthRequest, res: Response) {
   const { amount } = req.body;
+  if (!amount || typeof amount !== 'number' || amount < 100) {
+    res.status(400).json({ message: 'Amount must be at least 100 pence (£1.00)' });
+    return;
+  }
+
+  const exchange = await Exchange.findById(req.params.id);
+  if (!exchange) { res.status(404).json({ message: 'Exchange not found' }); return; }
+  if (String(exchange.recipientId) !== req.userId) { res.status(403).json({ message: 'Forbidden' }); return; }
+  if (exchange.status !== 'completed' && exchange.status !== 'auto-completed') {
+    res.status(400).json({ message: 'Exchange must be completed before donating' });
+    return;
+  }
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: Math.round(amount),
+    currency: 'gbp',
+    automatic_payment_methods: { enabled: true },
+    metadata: { exchangeId: String(exchange._id), donorId: String(exchange.donorId) },
+  });
+
+  res.json({ clientSecret: paymentIntent.client_secret });
+}
+
+export async function submitDonation(req: AuthRequest, res: Response) {
+  const { amount, paymentIntentId } = req.body;
   if (!amount || typeof amount !== 'number' || amount <= 0) {
     res.status(400).json({ message: 'A valid donation amount in pence is required' });
     return;
@@ -38,11 +67,29 @@ export async function submitDonation(req: AuthRequest, res: Response) {
     return;
   }
 
-  exchange.donationAmount = Math.round(amount);
+  if (paymentIntentId) {
+    const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (pi.status !== 'succeeded') {
+      res.status(400).json({ message: 'Payment has not been completed' });
+      return;
+    }
+  }
+
+  const amountPence = Math.round(amount);
+  exchange.donationAmount = amountPence;
   await exchange.save();
 
   await User.findByIdAndUpdate(exchange.donorId, {
-    $inc: { totalDonationsReceived: Math.round(amount) },
+    $inc: { totalDonationsReceived: amountPence },
+  });
+
+  const pounds = (amountPence / 100).toFixed(2);
+  sendNotification({
+    userId: String(exchange.donorId),
+    type: 'donation-received',
+    title: `You received a £${pounds} donation 💛`,
+    body: 'A recipient left a voluntary donation after collecting your food.',
+    relatedId: String(exchange._id),
   });
 
   res.json({ exchange });
