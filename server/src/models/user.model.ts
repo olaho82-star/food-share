@@ -41,6 +41,7 @@ const userSchema = new Schema<IUser>(
     searchRadiusMiles: { type: Number, default: 5 },
     foodPreferences: { type: [String], default: [] },
     disclaimerAccepted: { type: Boolean, required: true },
+    expoPushToken: { type: String, default: null },
     passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
   },

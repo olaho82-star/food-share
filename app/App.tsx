@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { RootNavigator } from './navigation/RootNavigator';
 import { useAuthStore } from './store/authStore';
 import { storage } from './utils/storage';
+import { registerForPushNotifications } from './utils/notifications';
 
 export default function App() {
   const { setAuth, setLoading } = useAuthStore();
@@ -26,6 +27,7 @@ export default function App() {
       }
     }
     restoreAuth();
+    registerForPushNotifications();
   }, []);
 
   return (

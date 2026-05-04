@@ -3,6 +3,7 @@ import { Listing } from '../models/listing.model';
 import { User } from '../models/user.model';
 import { Exchange } from '../models/exchange.model';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { sendNotification } from '../services/push.service';
 
 const LONDON_BOROUGHS = [
   'Barking and Dagenham','Barnet','Bexley','Brent','Bromley','Camden',
@@ -121,6 +122,14 @@ export async function claimListing(req: AuthRequest, res: Response) {
     claimedAt,
   });
 
+  sendNotification({
+    userId: String(listing.donorId),
+    type: 'listing-claimed',
+    title: 'Your listing was claimed 🎉',
+    body: `Someone has claimed "${listing.title}". Check your messages.`,
+    relatedId: String(listing._id),
+  });
+
   res.json({ listing });
 }
 
@@ -136,6 +145,16 @@ export async function markCollected(req: AuthRequest, res: Response) {
     { listingId: listing._id },
     { status: 'pending-confirmation', donorMarkedCollectedAt: new Date() }
   );
+
+  if (listing.claimedBy) {
+    sendNotification({
+      userId: String(listing.claimedBy),
+      type: 'claim-confirmed',
+      title: 'Please confirm your collection',
+      body: `The donor has marked "${listing.title}" as collected. Please confirm you received it.`,
+      relatedId: String(listing._id),
+    });
+  }
 
   res.json({ listing });
 }
@@ -156,5 +175,14 @@ export async function confirmCollection(req: AuthRequest, res: Response) {
   );
 
   await User.findByIdAndUpdate(req.userId, { $inc: { collectionsCount: 1 } });
+
+  sendNotification({
+    userId: String(listing.donorId),
+    type: 'pickup-completed',
+    title: 'Collection confirmed ✅',
+    body: `The recipient confirmed they collected "${listing.title}". Exchange complete!`,
+    relatedId: String(listing._id),
+  });
+
   res.json({ listing });
 }

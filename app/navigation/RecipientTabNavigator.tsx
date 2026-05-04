@@ -11,6 +11,7 @@ import { ClaimConfirmedScreen } from '../screens/recipient/ClaimConfirmedScreen'
 import { MyClaimsScreen } from '../screens/recipient/MyClaimsScreen';
 import { MessageInboxScreen } from '../screens/shared/MessageInboxScreen';
 import { ChatThreadScreen } from '../screens/shared/ChatThreadScreen';
+import { NotificationsScreen } from '../screens/shared/NotificationsScreen';
 
 const Tab = createBottomTabNavigator<RecipientTabParamList>();
 const HomeStack = createNativeStackNavigator<RecipientHomeStackParamList>();
@@ -61,7 +62,7 @@ export function RecipientTabNavigator() {
       <Tab.Screen name="RecipientHomeTab" component={RecipientHomeStackNavigator} options={{ title: 'Home', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🗺️</Text> }} />
       <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text> }} />
       <Tab.Screen name="MyClaimsTab" component={MyClaimsScreen} options={{ title: 'My Claims', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📦</Text> }} />
-      <Tab.Screen name="AlertsTab" options={{ title: 'Alerts', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🔔</Text> }} children={() => <PlaceholderScreen name="Notifications" />} />
+      <Tab.Screen name="AlertsTab" component={NotificationsScreen} options={{ title: 'Alerts', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🔔</Text> }} />
       <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} options={{ title: 'Profile', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text> }} />
     </Tab.Navigator>
   );

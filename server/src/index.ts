@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes';
 import listingRoutes from './routes/listing.routes';
 import exchangeRoutes from './routes/exchange.routes';
 import messageRoutes from './routes/message.routes';
+import notificationRoutes from './routes/notification.routes';
 import { startScheduler } from './services/scheduler';
 import { initFirebase } from './services/firebase';
 
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/exchanges', exchangeRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });

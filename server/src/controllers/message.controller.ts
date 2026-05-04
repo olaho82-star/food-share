@@ -3,6 +3,7 @@ import { Message } from '../models/message.model';
 import { Listing } from '../models/listing.model';
 import { getDb } from '../services/firebase';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { sendNotification } from '../services/push.service';
 
 async function assertParticipant(listingId: string, userId: string) {
   const listing = await Listing.findById(listingId);
@@ -38,7 +39,7 @@ export async function getConversations(req: AuthRequest, res: Response) {
 }
 
 export async function getMessages(req: AuthRequest, res: Response) {
-  const { listingId } = req.params;
+  const listingId = req.params.listingId as string;
   const listing = await assertParticipant(listingId, req.userId!);
   if (!listing) { res.status(403).json({ message: 'Forbidden' }); return; }
 
@@ -51,7 +52,7 @@ export async function getMessages(req: AuthRequest, res: Response) {
 }
 
 export async function sendMessage(req: AuthRequest, res: Response) {
-  const { listingId } = req.params;
+  const listingId = req.params.listingId as string;
   const { content } = req.body;
 
   if (!content?.trim()) { res.status(400).json({ message: 'Message content is required' }); return; }
@@ -64,11 +65,20 @@ export async function sendMessage(req: AuthRequest, res: Response) {
     ? String(listing.claimedBy)
     : String(listing.donorId);
 
-  const message = await Message.create({
+  const saved = await Message.create({
     listingId,
     senderId: req.userId,
     receiverId,
     content: content.trim(),
+  });
+  const message = saved as typeof saved & { _id: unknown };
+
+  sendNotification({
+    userId: receiverId,
+    type: 'message-received',
+    title: 'New message',
+    body: content.trim().slice(0, 80),
+    relatedId: listingId,
   });
 
   try {
