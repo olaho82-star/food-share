@@ -11,6 +11,8 @@ import { CreateStep2Screen } from '../screens/donor/CreateStep2Screen';
 import { CreateStep3Screen } from '../screens/donor/CreateStep3Screen';
 import { ListingSuccessScreen } from '../screens/donor/ListingSuccessScreen';
 import { MarkCollectedScreen } from '../screens/donor/MarkCollectedScreen';
+import { MessageInboxScreen } from '../screens/shared/MessageInboxScreen';
+import { ChatThreadScreen } from '../screens/shared/ChatThreadScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -33,8 +35,8 @@ function DonorHomeStackNavigator() {
 function MessagesStackNavigator() {
   return (
     <MessagesStack.Navigator screenOptions={{ headerStyle: { backgroundColor: Colors.primaryYellow }, headerTintColor: Colors.darkBrown, headerShadowVisible: false }}>
-      <MessagesStack.Screen name="MessageInbox" options={{ title: 'Messages' }} children={() => <PlaceholderScreen name="Message Inbox" />} />
-      <MessagesStack.Screen name="ChatThread" options={{ title: 'Chat' }} children={() => <PlaceholderScreen name="Chat Thread" />} />
+      <MessagesStack.Screen name="MessageInbox" component={MessageInboxScreen} options={{ title: 'Messages' }} />
+      <MessagesStack.Screen name="ChatThread" component={ChatThreadScreen} options={({ route }) => ({ title: (route.params as any)?.listingTitle || 'Chat' })} />
     </MessagesStack.Navigator>
   );
 }

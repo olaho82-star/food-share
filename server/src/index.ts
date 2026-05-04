@@ -6,7 +6,9 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import listingRoutes from './routes/listing.routes';
 import exchangeRoutes from './routes/exchange.routes';
+import messageRoutes from './routes/message.routes';
 import { startScheduler } from './services/scheduler';
+import { initFirebase } from './services/firebase';
 
 dotenv.config();
 
@@ -26,6 +28,7 @@ app.use('/api', limiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/exchanges', exchangeRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
@@ -35,6 +38,7 @@ mongoose
   .connect(process.env.MONGODB_URI!)
   .then(() => {
     console.log('Connected to MongoDB');
+    initFirebase();
     startScheduler();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
