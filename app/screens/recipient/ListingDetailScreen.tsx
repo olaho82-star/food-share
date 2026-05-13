@@ -123,7 +123,13 @@ export function ListingDetailScreen({ route, navigation }: Props) {
           <PrimaryButton label="Claim this listing" onPress={handleClaim} loading={claiming} />
         )}
         {isClaimedByMe && (
-          <OutlineButton label="Message donor" onPress={() => {}} />
+          <OutlineButton
+            label="Message donor"
+            onPress={() => (navigation as any).navigate('MessagesTab', {
+              screen: 'ChatThread',
+              params: { listingId: listing._id, listingTitle: listing.title },
+            })}
+          />
         )}
       </View>
     </ScrollView>

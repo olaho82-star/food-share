@@ -41,7 +41,13 @@ export function ClaimConfirmedScreen({ route, navigation }: Props) {
       )}
 
       <View style={styles.actions}>
-        <PrimaryButton label="Message donor" onPress={() => {}} />
+        <PrimaryButton
+          label="Message donor"
+          onPress={() => (navigation as any).navigate('MessagesTab', {
+            screen: 'ChatThread',
+            params: { listingId, listingTitle: listing?.title },
+          })}
+        />
         <OutlineButton label="View my claims" onPress={() => navigation.navigate('HomeMap')} />
       </View>
     </View>

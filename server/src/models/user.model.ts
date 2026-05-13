@@ -18,6 +18,7 @@ export interface IUser extends Document {
   searchRadiusMiles: number;
   foodPreferences: string[];
   disclaimerAccepted: boolean;
+  expoPushToken?: string | null;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   comparePassword(candidate: string): Promise<boolean>;

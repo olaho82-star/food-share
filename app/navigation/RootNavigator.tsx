@@ -5,16 +5,29 @@ import { SplashScreen } from '../screens/onboarding/SplashScreen';
 import { OnboardingNavigator } from './OnboardingNavigator';
 import { DonorTabNavigator } from './DonorTabNavigator';
 import { RecipientTabNavigator } from './RecipientTabNavigator';
+import { useAuthStore } from '../store/authStore';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  const { user, isLoading } = useAuthStore();
+
+  if (isLoading) return null;
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
-      <Stack.Screen name="DonorTabs" component={DonorTabNavigator} />
-      <Stack.Screen name="RecipientTabs" component={RecipientTabNavigator} />
+      {user ? (
+        user.role === 'donor' ? (
+          <Stack.Screen name="DonorTabs" component={DonorTabNavigator} />
+        ) : (
+          <Stack.Screen name="RecipientTabs" component={RecipientTabNavigator} />
+        )
+      ) : (
+        <>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }

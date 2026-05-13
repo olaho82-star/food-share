@@ -1,28 +1,14 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { Colors } from '../../constants/colors';
 import { PrimaryButton } from '../../components/buttons/PrimaryButton';
 import { OutlineButton } from '../../components/buttons/OutlineButton';
-import { useAuthStore } from '../../store/authStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 export function SplashScreen({ navigation }: Props) {
-  const { user, isLoading } = useAuthStore();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      if (user.role === 'donor') {
-        navigation.replace('DonorTabs');
-      } else {
-        navigation.replace('RecipientTabs');
-      }
-    }
-  }, [user, isLoading]);
-
-  if (isLoading) return null;
 
   return (
     <View style={styles.container}>
@@ -32,7 +18,7 @@ export function SplashScreen({ navigation }: Props) {
         </View>
         <Text style={styles.wordmark}>
           <Text style={styles.food}>Food</Text>
-          <Text style={styles.share}>Share</Text>
+          <Text style={styles.share}>Lodge</Text>
         </Text>
         <Text style={styles.tagline}>Connecting surplus food with people who need it</Text>
       </View>

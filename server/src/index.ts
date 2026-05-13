@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import listingRoutes from './routes/listing.routes';
 import exchangeRoutes from './routes/exchange.routes';
@@ -11,8 +13,6 @@ import notificationRoutes from './routes/notification.routes';
 import userRoutes from './routes/user.routes';
 import { startScheduler } from './services/scheduler';
 import { initFirebase } from './services/firebase';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

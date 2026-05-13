@@ -67,7 +67,17 @@ export function DonorTabNavigator() {
     >
       <Tab.Screen name="DonorHomeTab" component={DonorHomeStackNavigator} options={{ title: 'Home', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🏠</Text> }} />
       <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text> }} />
-      <Tab.Screen name="PostFoodTab" component={DonorHomeStackNavigator} options={{ title: 'Post Food', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>➕</Text> }} />
+      <Tab.Screen
+        name="PostFoodTab"
+        component={DonorHomeStackNavigator}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('DonorHomeTab', { screen: 'CreateStep1' });
+          },
+        })}
+        options={{ title: 'Post Food', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>➕</Text> }}
+      />
       <Tab.Screen name="AlertsTab" component={NotificationsScreen} options={{ title: 'Alerts', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🔔</Text> }} />
       <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} options={{ title: 'Profile', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text> }} />
     </Tab.Navigator>

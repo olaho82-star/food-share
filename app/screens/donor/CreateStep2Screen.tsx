@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Platform, FlatList, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DonorHomeStackParamList } from '../../navigation/types';
@@ -52,15 +52,28 @@ export function CreateStep2Screen({ navigation }: Props) {
         <Text style={styles.chevron}>▾</Text>
       </TouchableOpacity>
       {errors.borough && <Text style={styles.errorText}>{errors.borough}</Text>}
-      {showBoroughPicker && (
-        <View style={styles.boroughList}>
-          {LONDON_BOROUGHS.map((b) => (
-            <TouchableOpacity key={b} style={[styles.boroughItem, borough === b && styles.boroughItemActive]} onPress={() => { setBorough(b); setShowBoroughPicker(false); }}>
-              <Text style={[styles.boroughItemText, borough === b && styles.boroughItemTextActive]}>{b}</Text>
-            </TouchableOpacity>
-          ))}
+      <Modal visible={showBoroughPicker} animationType="slide" transparent onRequestClose={() => setShowBoroughPicker(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select borough</Text>
+              <TouchableOpacity onPress={() => setShowBoroughPicker(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={LONDON_BOROUGHS}
+              keyExtractor={(b) => b}
+              keyboardShouldPersistTaps="handled"
+              renderItem={({ item: b }) => (
+                <TouchableOpacity style={[styles.boroughItem, borough === b && styles.boroughItemActive]} onPress={() => { setBorough(b); setShowBoroughPicker(false); }}>
+                  <Text style={[styles.boroughItemText, borough === b && styles.boroughItemTextActive]}>{b}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
         </View>
-      )}
+      </Modal>
 
       <TextInput label="Full address (shown only after claim)" value={fullAddress} onChangeText={setFullAddress} placeholder="House number, street, postcode" error={errors.fullAddress} />
 
@@ -138,4 +151,9 @@ const styles = StyleSheet.create({
   toggleLabel: { fontSize: 13, fontWeight: '500', color: Colors.darkBrown },
   toggleDesc: { fontSize: 11, color: Colors.deepAmber, marginTop: 2 },
   footer: { marginTop: 24 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  modalSheet: { backgroundColor: Colors.white, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '70%' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 0.5, borderBottomColor: Colors.amberBorder },
+  modalTitle: { fontSize: 15, fontWeight: '600', color: Colors.darkBrown },
+  modalClose: { fontSize: 18, color: Colors.deepAmber, paddingHorizontal: 4 },
 });
