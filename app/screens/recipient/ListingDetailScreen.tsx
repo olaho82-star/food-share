@@ -15,7 +15,7 @@ import { Listing } from '../../types';
 
 type Props = NativeStackScreenProps<RecipientHomeStackParamList, 'ListingDetail'>;
 
-const DISCLAIMER = 'FoodShare connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodShare accepts no liability for illness, injury or harm resulting from food exchanged on this platform. Recipients should use their own judgement before consuming any items collected through FoodShare.';
+const DISCLAIMER = 'FoodLodge connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodLodge accepts no liability for illness, injury or harm resulting from food exchanged on this platform. Recipients should use their own judgement before consuming any items collected through FoodLodge.';
 
 export function ListingDetailScreen({ route, navigation }: Props) {
   const { listingId } = route.params;

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS = {
-  ACCESS_TOKEN: '@foodshare/access_token',
-  REFRESH_TOKEN: '@foodshare/refresh_token',
-  USER: '@foodshare/user',
+  ACCESS_TOKEN: '@foodlodge/access_token',
+  REFRESH_TOKEN: '@foodlodge/refresh_token',
+  USER: '@foodlodge/user',
 };
 
 export const storage = {

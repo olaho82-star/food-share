@@ -11,7 +11,7 @@ import { Listing } from '../../types';
 
 type Props = NativeStackScreenProps<DonorHomeStackParamList, 'CreateStep3'>;
 
-const DISCLAIMER = 'FoodShare connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodShare accepts no liability for illness, injury or harm resulting from food exchanged on this platform.';
+const DISCLAIMER = 'FoodLodge connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodLodge accepts no liability for illness, injury or harm resulting from food exchanged on this platform.';
 
 export function CreateStep3Screen({ navigation }: Props) {
   const store = useCreateListingStore();

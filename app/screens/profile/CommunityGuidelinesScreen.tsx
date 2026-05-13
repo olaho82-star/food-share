@@ -19,7 +19,7 @@ const SECTIONS = [
   },
   {
     title: 'Conduct & trust',
-    body: "Keep all communication on FoodShare. Never share personal contact details. FoodShare is not for commercial gain. Repeated no-shows or abusive behaviour may result in account suspension.",
+    body: "Keep all communication on FoodLodge. Never share personal contact details. FoodLodge is not for commercial gain. Repeated no-shows or abusive behaviour may result in account suspension.",
   },
 ];
 
@@ -27,7 +27,7 @@ export function CommunityGuidelinesScreen() {
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       <Text style={styles.intro}>
-        FoodShare is built on trust. These guidelines help keep our community safe, respectful, and effective.
+        FoodLodge is built on trust. These guidelines help keep our community safe, respectful, and effective.
       </Text>
 
       {SECTIONS.map((section, i) => (
@@ -44,7 +44,7 @@ export function CommunityGuidelinesScreen() {
         <Text style={styles.reportTitle}>Report a concern</Text>
         <Text style={styles.reportBody}>
           If you experience or witness behaviour that violates these guidelines, please contact our support team at{' '}
-          <Text style={styles.reportEmail}>support@foodshare.app</Text>
+          <Text style={styles.reportEmail}>support@foodlodge.app</Text>
         </Text>
       </View>
     </ScrollView>

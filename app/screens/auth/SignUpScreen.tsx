@@ -12,7 +12,7 @@ import { useAuthStore } from '../../store/authStore';
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'SignUp'>;
 
 const DISCLAIMER =
-  'FoodShare connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodShare accepts no liability for illness, injury or harm resulting from food exchanged on this platform. Recipients should use their own judgement before consuming any items collected through FoodShare.';
+  'FoodLodge connects donors and recipients but does not verify food safety or quality. All food exchanges are made in good faith. FoodLodge accepts no liability for illness, injury or harm resulting from food exchanged on this platform. Recipients should use their own judgement before consuming any items collected through FoodLodge.';
 
 export function SignUpScreen({ route, navigation }: Props) {
   const { role } = route.params;

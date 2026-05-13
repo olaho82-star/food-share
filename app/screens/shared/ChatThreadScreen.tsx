@@ -18,7 +18,7 @@ interface FirebaseMessage {
   read: boolean;
 }
 
-const SAFETY_BANNER = 'Keep all communication on FoodShare. Never share personal contact details or arrange payments outside the app.';
+const SAFETY_BANNER = 'Keep all communication on FoodLodge. Never share personal contact details or arrange payments outside the app.';
 
 export function ChatThreadScreen({ route }: Props) {
   const { listingId } = route.params;

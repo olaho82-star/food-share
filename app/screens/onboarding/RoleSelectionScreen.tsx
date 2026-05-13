@@ -13,7 +13,7 @@ export function RoleSelectionScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>How will you use{'\n'}FoodShare?</Text>
+        <Text style={styles.title}>How will you use{'\n'}FoodLodge?</Text>
         <Text style={styles.subtitle}>You can only choose one role. Contact support to change it later.</Text>
       </View>
 

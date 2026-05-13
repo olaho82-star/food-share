@@ -44,7 +44,7 @@ export function VoluntaryDonationScreen({ route, navigation }: Props) {
 
       const { error: initError } = await initPaymentSheet({
         paymentIntentClientSecret: clientSecret,
-        merchantDisplayName: 'FoodShare',
+        merchantDisplayName: 'FoodLodge',
         style: 'automatic',
       });
       if (initError) throw new Error(initError.message);

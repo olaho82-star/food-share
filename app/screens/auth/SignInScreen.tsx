@@ -44,7 +44,7 @@ export function SignInScreen({ navigation }: Props) {
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>Sign in to your FoodShare account</Text>
+      <Text style={styles.subtitle}>Sign in to your FoodLodge account</Text>
 
       <TextInput label="Email" value={email} onChangeText={setEmail} placeholder="you@example.com" error={errors.email} keyboardType="email-address" autoCapitalize="none" />
       <TextInput label="Password" value={password} onChangeText={setPassword} placeholder="Your password" error={errors.password} secureTextEntry />
