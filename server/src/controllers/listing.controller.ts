@@ -48,7 +48,10 @@ export async function getListings(req: AuthRequest, res: Response) {
 
   if (req.userRole === 'recipient') {
     const query: Record<string, unknown> = { claimedBy: req.userId };
-    if (status) query.status = status;
+    if (status) {
+      const statuses = (status as string).split(',');
+      query.status = { $in: statuses };
+    }
     const listings = await Listing.find(query).sort({ claimedAt: -1 });
     res.json({ listings });
     return;
