@@ -5,14 +5,43 @@ import { Exchange } from '../models/exchange.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { sendNotification } from '../services/push.service';
 
-const LONDON_BOROUGHS = [
-  'Barking and Dagenham','Barnet','Bexley','Brent','Bromley','Camden',
-  'City of London','Croydon','Ealing','Enfield','Greenwich','Hackney',
-  'Hammersmith and Fulham','Haringey','Harrow','Havering','Hillingdon',
-  'Hounslow','Islington','Kensington and Chelsea','Kingston upon Thames',
-  'Lambeth','Lewisham','Merton','Newham','Redbridge','Richmond upon Thames',
-  'Southwark','Sutton','Tower Hamlets','Waltham Forest','Wandsworth','Westminster',
-];
+const BOROUGH_COORDS: Record<string, { lat: number; lng: number }> = {
+  'Barking and Dagenham': { lat: 51.5607, lng: 0.1557 },
+  'Barnet':               { lat: 51.6252, lng: -0.1517 },
+  'Bexley':               { lat: 51.4549, lng: 0.1505 },
+  'Brent':                { lat: 51.5588, lng: -0.2817 },
+  'Bromley':              { lat: 51.4039, lng: 0.0198 },
+  'Camden':               { lat: 51.5290, lng: -0.1255 },
+  'City of London':       { lat: 51.5155, lng: -0.0922 },
+  'Croydon':              { lat: 51.3714, lng: -0.0985 },
+  'Ealing':               { lat: 51.5130, lng: -0.3089 },
+  'Enfield':              { lat: 51.6538, lng: -0.0799 },
+  'Greenwich':            { lat: 51.4934, lng: 0.0098 },
+  'Hackney':              { lat: 51.5450, lng: -0.0553 },
+  'Hammersmith and Fulham': { lat: 51.4927, lng: -0.2339 },
+  'Haringey':             { lat: 51.5906, lng: -0.1119 },
+  'Harrow':               { lat: 51.5898, lng: -0.3346 },
+  'Havering':             { lat: 51.5812, lng: 0.2128 },
+  'Hillingdon':           { lat: 51.5441, lng: -0.4760 },
+  'Hounslow':             { lat: 51.4746, lng: -0.3680 },
+  'Islington':            { lat: 51.5416, lng: -0.1025 },
+  'Kensington and Chelsea': { lat: 51.4991, lng: -0.1938 },
+  'Kingston upon Thames': { lat: 51.4085, lng: -0.3064 },
+  'Lambeth':              { lat: 51.4571, lng: -0.1231 },
+  'Lewisham':             { lat: 51.4452, lng: -0.0209 },
+  'Merton':               { lat: 51.4014, lng: -0.1958 },
+  'Newham':               { lat: 51.5077, lng: 0.0469 },
+  'Redbridge':            { lat: 51.5590, lng: 0.0741 },
+  'Richmond upon Thames': { lat: 51.4479, lng: -0.3260 },
+  'Southwark':            { lat: 51.5035, lng: -0.0804 },
+  'Sutton':               { lat: 51.3618, lng: -0.1945 },
+  'Tower Hamlets':        { lat: 51.5203, lng: -0.0293 },
+  'Waltham Forest':       { lat: 51.5908, lng: -0.0134 },
+  'Wandsworth':           { lat: 51.4571, lng: -0.1918 },
+  'Westminster':          { lat: 51.4975, lng: -0.1357 },
+};
+
+const LONDON_BOROUGHS = Object.keys(BOROUGH_COORDS);
 
 export async function getListings(req: AuthRequest, res: Response) {
   const { status } = req.query;
@@ -69,7 +98,7 @@ export async function createListing(req: AuthRequest, res: Response) {
     title, description, category, quantity, servesCount,
     photoUrl: photoUrl || '',
     borough, fullAddress,
-    coords: { lat: 0, lng: 0 },
+    coords: BOROUGH_COORDS[borough] || { lat: 51.5074, lng: -0.1278 },
     pickupDate, pickupFrom, pickupUntil, expiryDate,
     acceptsDonations: !!acceptsDonations,
     donorAnonymous: !!donorAnonymous,

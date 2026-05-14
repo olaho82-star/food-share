@@ -61,7 +61,7 @@ export function HomeScreen({ navigation }: Props) {
     }
   }
 
-  useFocusEffect(useCallback(() => { fetchListings(); }, []));
+  useFocusEffect(useCallback(() => { fetchListings(); }, [region.latitude, region.longitude]));
 
   function filterByCategory(cat: Category | null) {
     setActiveCategory(cat);
