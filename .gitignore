@@ -28,6 +28,7 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+server/dist/
 
 # EAS / Google Play submission
 google-service-account.json
