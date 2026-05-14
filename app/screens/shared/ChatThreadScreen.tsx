@@ -7,6 +7,7 @@ import { Colors } from '../../constants/colors';
 import { rtdb } from '../../utils/firebase';
 import { messageService } from '../../services/message.service';
 import { useAuthStore } from '../../store/authStore';
+import { useMessagesStore } from '../../store/messagesStore';
 
 type Props = NativeStackScreenProps<MessagesStackParamList, 'ChatThread'>;
 
@@ -23,12 +24,16 @@ const SAFETY_BANNER = 'Keep all communication on FoodLodge. Never share personal
 export function ChatThreadScreen({ route }: Props) {
   const { listingId } = route.params;
   const { user } = useAuthStore();
+  const { triggerRefetch } = useMessagesStore();
   const [messages, setMessages] = useState<FirebaseMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
+    // Mark messages as read on the server and clear the badge
+    messageService.getMessages(listingId).then(() => triggerRefetch()).catch(() => {});
+
     const messagesRef = ref(rtdb, `messages/${listingId}`);
     onValue(messagesRef, (snapshot) => {
       const data = snapshot.val();
