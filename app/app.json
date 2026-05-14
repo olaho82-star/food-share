@@ -42,6 +42,12 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "extra": {
+      "eas": {
+        "projectId": "8a80d2df-7e26-4113-b170-9c4c030b9ebb"
+      }
+    },
+    "owner": "olaho82-star",
     "plugins": [
       [
         "expo-location",
