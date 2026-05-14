@@ -7,6 +7,7 @@ import { PrimaryButton } from '../../components/buttons/PrimaryButton';
 import { CategoryTag } from '../../components/badges/CategoryTag';
 import { useCreateListingStore } from '../../store/createListingStore';
 import { listingService } from '../../services/listing.service';
+import { uploadListingPhoto } from '../../utils/firebase';
 import { Listing } from '../../types';
 
 type Props = NativeStackScreenProps<DonorHomeStackParamList, 'CreateStep3'>;
@@ -24,13 +25,18 @@ export function CreateStep3Screen({ navigation }: Props) {
     setError('');
     setLoading(true);
     try {
+      let photoUrl = '';
+      if (store.photoUri) {
+        photoUrl = await uploadListingPhoto(store.photoUri);
+      }
+
       await listingService.createListing({
         title: store.title,
         description: store.description,
         category: store.category as Listing['category'],
         quantity: store.quantity,
         servesCount: store.servesCount,
-        photoUrl: '',
+        photoUrl,
         borough: store.borough,
         fullAddress: store.fullAddress,
         pickupDate: store.pickupDate.toISOString(),

@@ -8,6 +8,7 @@ import { PrimaryButton } from '../../components/buttons/PrimaryButton';
 import { authService } from '../../services/auth.service';
 import { storage } from '../../utils/storage';
 import { useAuthStore } from '../../store/authStore';
+import { registerForPushNotifications } from '../../utils/notifications';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'SignIn'>;
 
@@ -34,6 +35,7 @@ export function SignInScreen({ navigation }: Props) {
       const res = await authService.login(email, password);
       await storage.saveAuth(res.accessToken, res.refreshToken, res.user);
       setAuth(res.user, { accessToken: res.accessToken, refreshToken: res.refreshToken });
+      registerForPushNotifications();
     } catch (err: any) {
       Alert.alert('Sign in failed', err.message);
     } finally {

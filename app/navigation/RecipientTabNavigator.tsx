@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text } from 'react-native';
 import { RecipientTabParamList, RecipientHomeStackParamList, MessagesStackParamList, ProfileStackParamList } from './types';
 import { Colors } from '../constants/colors';
+import { useUnreadCount } from '../hooks/useUnreadCount';
 import { HomeScreen } from '../screens/recipient/HomeScreen';
 import { ListingDetailScreen } from '../screens/recipient/ListingDetailScreen';
 import { ClaimConfirmedScreen } from '../screens/recipient/ClaimConfirmedScreen';
@@ -54,6 +55,8 @@ function ProfileStackNavigator() {
 }
 
 export function RecipientTabNavigator() {
+  const unread = useUnreadCount();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -65,7 +68,7 @@ export function RecipientTabNavigator() {
       }}
     >
       <Tab.Screen name="RecipientHomeTab" component={RecipientHomeStackNavigator} options={{ title: 'Home', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🗺️</Text> }} />
-      <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text> }} />
+      <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text>, tabBarBadge: unread > 0 ? unread : undefined }} />
       <Tab.Screen name="MyClaimsTab" component={MyClaimsScreen} options={{ title: 'My Claims', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📦</Text> }} />
       <Tab.Screen name="AlertsTab" component={NotificationsScreen} options={{ title: 'Alerts', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🔔</Text> }} />
       <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} options={{ title: 'Profile', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text> }} />

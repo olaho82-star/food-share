@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text } from 'react-native';
 import { DonorTabParamList, DonorHomeStackParamList, MessagesStackParamList, ProfileStackParamList } from './types';
 import { Colors } from '../constants/colors';
+import { useUnreadCount } from '../hooks/useUnreadCount';
 import { MyListingsScreen } from '../screens/donor/MyListingsScreen';
 import { CreateStep1Screen } from '../screens/donor/CreateStep1Screen';
 import { CreateStep2Screen } from '../screens/donor/CreateStep2Screen';
@@ -55,6 +56,8 @@ function ProfileStackNavigator() {
 }
 
 export function DonorTabNavigator() {
+  const unread = useUnreadCount();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -66,7 +69,7 @@ export function DonorTabNavigator() {
       }}
     >
       <Tab.Screen name="DonorHomeTab" component={DonorHomeStackNavigator} options={{ title: 'Home', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🏠</Text> }} />
-      <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text> }} />
+      <Tab.Screen name="MessagesTab" component={MessagesStackNavigator} options={{ title: 'Messages', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text>, tabBarBadge: unread > 0 ? unread : undefined }} />
       <Tab.Screen
         name="PostFoodTab"
         component={DonorHomeStackNavigator}

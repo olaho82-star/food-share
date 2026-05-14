@@ -8,6 +8,7 @@ import { PrimaryButton } from '../../components/buttons/PrimaryButton';
 import { authService } from '../../services/auth.service';
 import { storage } from '../../utils/storage';
 import { useAuthStore } from '../../store/authStore';
+import { registerForPushNotifications } from '../../utils/notifications';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'SignUp'>;
 
@@ -45,6 +46,7 @@ export function SignUpScreen({ route, navigation }: Props) {
       const res = await authService.register({ name, email, password, role, disclaimerAccepted });
       await storage.saveAuth(res.accessToken, res.refreshToken, res.user);
       setAuth(res.user, { accessToken: res.accessToken, refreshToken: res.refreshToken });
+      registerForPushNotifications();
     } catch (err: any) {
       Alert.alert('Sign up failed', err.message);
     } finally {

@@ -19,5 +19,6 @@ export async function savePushToken(req: AuthRequest, res: Response) {
   const { token } = req.body;
   if (!token) { res.status(400).json({ message: 'Token is required' }); return; }
   await User.findByIdAndUpdate(req.userId, { expoPushToken: token });
+  console.log(`[Push] Token saved for user ${req.userId}: ${token}`);
   res.json({ message: 'Push token saved' });
 }

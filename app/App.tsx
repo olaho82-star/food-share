@@ -11,7 +11,7 @@ import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { OfflineBanner } from './components/layout/OfflineBanner';
 
 export default function App() {
-  const { setAuth, setLoading } = useAuthStore();
+  const { setAuth, setLoading, user } = useAuthStore();
 
   useEffect(() => {
     async function restoreAuth() {
@@ -30,8 +30,14 @@ export default function App() {
       }
     }
     restoreAuth();
-    registerForPushNotifications();
   }, []);
+
+  // Register for push notifications once the user is authenticated
+  useEffect(() => {
+    if (user) {
+      registerForPushNotifications();
+    }
+  }, [user]);
 
   return (
     <ErrorBoundary>
