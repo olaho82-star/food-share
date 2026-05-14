@@ -6,7 +6,11 @@ import { User } from '../models/user.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { sendNotification } from '../services/push.service';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  return _stripe;
+}
 
 export async function getExchanges(req: AuthRequest, res: Response) {
   const field = req.userRole === 'donor' ? 'donorId' : 'recipientId';
@@ -42,7 +46,7 @@ export async function createPaymentIntent(req: AuthRequest, res: Response) {
     return;
   }
 
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: Math.round(amount),
     currency: 'gbp',
     automatic_payment_methods: { enabled: true },
@@ -68,7 +72,7 @@ export async function submitDonation(req: AuthRequest, res: Response) {
   }
 
   if (paymentIntentId) {
-    const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const pi = await getStripe().paymentIntents.retrieve(paymentIntentId);
     if (pi.status !== 'succeeded') {
       res.status(400).json({ message: 'Payment has not been completed' });
       return;
