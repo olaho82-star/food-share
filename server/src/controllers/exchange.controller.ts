@@ -6,8 +6,8 @@ import { User } from '../models/user.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { sendNotification } from '../services/push.service';
 
-let _stripe: Stripe | null = null;
-function getStripe(): Stripe {
+let _stripe: InstanceType<typeof Stripe> | null = null;
+function getStripe(): InstanceType<typeof Stripe> {
   if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   return _stripe;
 }
