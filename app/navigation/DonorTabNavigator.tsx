@@ -18,6 +18,8 @@ import { NotificationsScreen } from '../screens/shared/NotificationsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { CommunityGuidelinesScreen } from '../screens/profile/CommunityGuidelinesScreen';
+import { PremiumScreen } from '../screens/shared/PremiumScreen';
+import { SupportScreen } from '../screens/shared/SupportScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -52,6 +54,8 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit profile' }} />
       <ProfileStack.Screen name="CommunityGuidelines" component={CommunityGuidelinesScreen} options={{ title: 'Community Guidelines' }} />
+      <ProfileStack.Screen name="Premium" component={PremiumScreen} options={{ title: 'Business Plan' }} />
+      <ProfileStack.Screen name="Support" component={SupportScreen} options={{ title: 'Support FoodLodge' }} />
     </ProfileStack.Navigator>
   );
 }

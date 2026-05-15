@@ -186,10 +186,33 @@ export function ProfileScreen() {
         </>
       )}
 
+      {isDonor && (
+        <TouchableOpacity
+          style={[(user as any).isPremium ? styles.premiumActiveBanner : styles.premiumBanner]}
+          onPress={() => navigation.navigate('Premium')}
+        >
+          <Text style={styles.premiumBannerEmoji}>{(user as any).isPremium ? '⭐' : '🚀'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.premiumBannerTitle}>
+              {(user as any).isPremium ? 'Business Plan Active' : 'Upgrade to Business'}
+            </Text>
+            <Text style={styles.premiumBannerSub}>
+              {(user as any).isPremium ? 'Manage your subscription' : 'Priority listings · Verified badge · £9.99/mo'}
+            </Text>
+          </View>
+          <Text style={styles.supportChevron}>›</Text>
+        </TouchableOpacity>
+      )}
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
         <TouchableOpacity style={styles.supportRow} onPress={() => navigation.navigate('CommunityGuidelines')}>
           <Text style={styles.supportLabel}>Community guidelines</Text>
+          <Text style={styles.supportChevron}>›</Text>
+        </TouchableOpacity>
+        <Divider />
+        <TouchableOpacity style={styles.supportRow} onPress={() => navigation.navigate('Support')}>
+          <Text style={styles.supportLabel}>💚 Support FoodLodge</Text>
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
         <Divider />
@@ -244,6 +267,11 @@ const styles = StyleSheet.create({
   supportRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 },
   supportLabel: { fontSize: 13, color: Colors.darkBrown },
   supportChevron: { fontSize: 18, color: Colors.deepAmber },
+  premiumBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.goldenAmber, borderRadius: 14, padding: 14, marginBottom: 14, gap: 12 },
+  premiumActiveBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.primaryYellow, borderRadius: 14, padding: 14, marginBottom: 14, gap: 12, borderWidth: 1.5, borderColor: Colors.goldenAmber },
+  premiumBannerEmoji: { fontSize: 28 },
+  premiumBannerTitle: { fontSize: 14, fontWeight: '700', color: Colors.darkBrown, marginBottom: 2 },
+  premiumBannerSub: { fontSize: 11, color: Colors.deepAmber },
   donationCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.primaryYellow, borderRadius: 14, padding: 16, marginBottom: 14, gap: 14 },
   donationEmoji: { fontSize: 36 },
   donationInfo: { flex: 1 },

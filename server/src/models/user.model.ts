@@ -19,6 +19,10 @@ export interface IUser extends Document {
   foodPreferences: string[];
   disclaimerAccepted: boolean;
   expoPushToken?: string | null;
+  isPremium: boolean;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  premiumSince?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   comparePassword(candidate: string): Promise<boolean>;
@@ -43,6 +47,10 @@ const userSchema = new Schema<IUser>(
     foodPreferences: { type: [String], default: [] },
     disclaimerAccepted: { type: Boolean, required: true },
     expoPushToken: { type: String, default: null },
+    isPremium: { type: Boolean, default: false },
+    stripeCustomerId: { type: String },
+    stripeSubscriptionId: { type: String },
+    premiumSince: { type: Date },
     passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
   },
