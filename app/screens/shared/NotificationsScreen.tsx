@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
 import { notificationService, AppNotification } from '../../services/notification.service';
+import { useAuthStore } from '../../store/authStore';
 
 const TYPE_ICONS: Record<string, string> = {
   'listing-claimed':    '🎉',
@@ -33,9 +34,36 @@ function groupByDay(notifications: AppNotification[]) {
 }
 
 export function NotificationsScreen() {
+  const navigation = useNavigation<any>();
+  const { user } = useAuthStore();
+  const isDonor = user?.role === 'donor';
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  function handleNotificationPress(n: AppNotification) {
+    switch (n.type) {
+      case 'message-received':
+        navigation.navigate('MessagesTab', { screen: 'MessageInbox' });
+        break;
+      case 'listing-claimed':
+      case 'pickup-completed':
+      case 'listing-expiring':
+      case 'listing-expired':
+      case 'donation-received':
+        navigation.navigate(isDonor ? 'DonorHomeTab' : 'RecipientHomeTab', { screen: isDonor ? 'MyListings' : 'HomeMap' });
+        break;
+      case 'claim-confirmed':
+      case 'pickup-reminder':
+        navigation.navigate('MyClaimsTab');
+        break;
+      case 'new-food-nearby':
+        navigation.navigate('RecipientHomeTab', { screen: 'HomeMap' });
+        break;
+      default:
+        break;
+    }
+  }
 
   async function fetchNotifications(refresh = false) {
     if (refresh) setRefreshing(true); else setLoading(true);
@@ -68,7 +96,12 @@ export function NotificationsScreen() {
             <View>
               <Text style={styles.groupHeader}>{group.title}</Text>
               {group.data.map((n) => (
-                <View key={n._id} style={[styles.row, !n.read && styles.rowUnread]}>
+                <TouchableOpacity
+                  key={n._id}
+                  style={[styles.row, !n.read && styles.rowUnread]}
+                  onPress={() => handleNotificationPress(n)}
+                  activeOpacity={0.75}
+                >
                   <Text style={styles.icon}>{TYPE_ICONS[n.type] ?? '🔔'}</Text>
                   <View style={styles.rowContent}>
                     <Text style={styles.rowTitle}>{n.title}</Text>
@@ -78,7 +111,7 @@ export function NotificationsScreen() {
                     </Text>
                   </View>
                   {!n.read && <View style={styles.dot} />}
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           )}
