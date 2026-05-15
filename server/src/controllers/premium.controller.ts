@@ -61,8 +61,8 @@ export async function subscribePremium(req: AuthRequest, res: Response) {
       expand: ['latest_invoice.payment_intent'],
     });
 
-    const invoice = subscription.latest_invoice as Stripe.Invoice;
-    const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent | null;
+    const invoice = subscription.latest_invoice as any;
+    const paymentIntent = invoice?.payment_intent as any;
 
     if (!paymentIntent?.client_secret) {
       res.status(500).json({ message: 'Failed to create payment intent. Please try again.' });
@@ -117,7 +117,7 @@ export async function handleWebhook(req: Request, res: Response) {
   const stripe = getStripe();
   const sig = req.headers['stripe-signature'] as string;
 
-  let event: Stripe.Event;
+  let event: any;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch {
@@ -126,7 +126,7 @@ export async function handleWebhook(req: Request, res: Response) {
   }
 
   if (event.type === 'customer.subscription.deleted') {
-    const sub = event.data.object as Stripe.Subscription;
+    const sub = event.data.object as any;
     await User.findOneAndUpdate(
       { stripeSubscriptionId: sub.id },
       { isPremium: false, stripeSubscriptionId: null, premiumSince: null }
@@ -134,7 +134,7 @@ export async function handleWebhook(req: Request, res: Response) {
   }
 
   if (event.type === 'invoice.payment_failed') {
-    const invoice = event.data.object as Stripe.Invoice;
+    const invoice = event.data.object as any;
     if (invoice.subscription) {
       await User.findOneAndUpdate(
         { stripeSubscriptionId: invoice.subscription as string },
