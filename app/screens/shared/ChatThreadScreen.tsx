@@ -109,7 +109,7 @@ export function ChatThreadScreen({ route }: Props) {
           <TouchableOpacity
             activeOpacity={0.85}
             onLongPress={() => isMe(item.senderId) && handleDelete(item._id)}
-            delayLongPress={400}
+            delayLongPress={200}
           >
             <View style={[styles.bubble, isMe(item.senderId) ? styles.bubbleMe : styles.bubbleThem]}>
               <Text style={[styles.bubbleText, isMe(item.senderId) ? styles.bubbleTextMe : styles.bubbleTextThem]}>

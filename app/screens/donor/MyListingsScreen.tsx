@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DonorHomeStackParamList } from '../../navigation/types';
@@ -19,12 +19,32 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'expired', label: 'Expired' },
 ];
 
-export function MyListingsScreen({ navigation }: Props) {
+export function MyListingsScreen({ }: Props) {
   const { user } = useAuthStore();
   const [tab, setTab] = useState<Tab>('active');
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [marking, setMarking] = useState<string | null>(null);
+
+  async function handleMarkCollected(listingId: string) {
+    Alert.alert('Mark as collected', 'Has the recipient collected this food?', [
+      { text: 'Not yet', style: 'cancel' },
+      {
+        text: 'Yes, mark collected', onPress: async () => {
+          setMarking(listingId);
+          try {
+            await listingService.markCollected(listingId);
+            fetchListings();
+          } catch (err: any) {
+            Alert.alert('Error', err.message);
+          } finally {
+            setMarking(null);
+          }
+        },
+      },
+    ]);
+  }
 
   async function fetchListings(refresh = false) {
     if (refresh) setRefreshing(true); else setLoading(true);
@@ -82,7 +102,25 @@ export function MyListingsScreen({ navigation }: Props) {
           contentContainerStyle={styles.list}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchListings(true)} tintColor={Colors.goldenAmber} />}
           renderItem={({ item }) => (
-            <ListingCard listing={item} onPress={() => {}} />
+            <View style={styles.cardWrapper}>
+              <ListingCard listing={item} onPress={() => {}} />
+              {item.status === 'claimed' && (
+                <TouchableOpacity
+                  style={[styles.actionBtn, marking === item._id && styles.actionBtnDisabled]}
+                  onPress={() => handleMarkCollected(item._id)}
+                  disabled={marking === item._id}
+                >
+                  <Text style={styles.actionBtnText}>
+                    {marking === item._id ? 'Marking…' : '📦 Mark as collected'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {item.status === 'pending-confirmation' && (
+                <View style={styles.pendingBox}>
+                  <Text style={styles.pendingText}>⏳ Waiting for recipient to confirm collection</Text>
+                </View>
+              )}
+            </View>
           )}
           ListEmptyComponent={
             <View style={styles.empty}>
@@ -113,4 +151,10 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', marginTop: 60 },
   emptyEmoji: { fontSize: 40, marginBottom: 10 },
   emptyText: { fontSize: 14, color: Colors.deepAmber },
+  cardWrapper: { marginBottom: 10 },
+  actionBtn: { backgroundColor: Colors.primaryYellow, borderRadius: 10, paddingVertical: 10, alignItems: 'center', marginTop: 6 },
+  actionBtnDisabled: { opacity: 0.5 },
+  actionBtnText: { fontSize: 13, fontWeight: '600', color: Colors.darkBrown },
+  pendingBox: { backgroundColor: Colors.paleLemon, borderRadius: 10, paddingVertical: 10, alignItems: 'center', marginTop: 6, borderWidth: 1, borderColor: Colors.amberBorder },
+  pendingText: { fontSize: 12, color: Colors.deepAmber },
 });
