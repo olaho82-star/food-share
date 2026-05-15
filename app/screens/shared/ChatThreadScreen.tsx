@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
-import { ref, onValue, off } from 'firebase/database';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessagesStackParamList } from '../../navigation/types';
 import { Colors } from '../../constants/colors';
-import { rtdb } from '../../utils/firebase';
 import { messageService } from '../../services/message.service';
 import { useAuthStore } from '../../store/authStore';
 import { useMessagesStore } from '../../store/messagesStore';
 
 type Props = NativeStackScreenProps<MessagesStackParamList, 'ChatThread'>;
 
-interface FirebaseMessage {
+interface ChatMessage {
   _id: string;
   senderId: string;
   content: string;
@@ -20,31 +18,38 @@ interface FirebaseMessage {
 }
 
 const SAFETY_BANNER = 'Keep all communication on FoodLodge. Never share personal contact details or arrange payments outside the app.';
+const POLL_INTERVAL_MS = 3000;
 
 export function ChatThreadScreen({ route }: Props) {
   const { listingId } = route.params;
   const { user } = useAuthStore();
   const { triggerRefetch } = useMessagesStore();
-  const [messages, setMessages] = useState<FirebaseMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  async function loadMessages() {
+    try {
+      const res = await messageService.getMessages(listingId);
+      setMessages((res as any).messages || []);
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: false }), 100);
+    } catch {
+      // silently ignore poll errors
+    }
+  }
 
   useEffect(() => {
-    // Mark messages as read on the server and clear the badge
-    messageService.getMessages(listingId).then(() => triggerRefetch()).catch(() => {});
+    // Initial load + mark as read
+    loadMessages().then(() => triggerRefetch()).catch(() => {});
 
-    const messagesRef = ref(rtdb, `messages/${listingId}`);
-    onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const list: FirebaseMessage[] = Object.values(data);
-        list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        setMessages(list);
-        setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
-      }
-    });
-    return () => off(messagesRef);
+    // Poll every 3 seconds for new messages
+    intervalRef.current = setInterval(loadMessages, POLL_INTERVAL_MS);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [listingId]);
 
   async function handleSend() {
@@ -54,6 +59,8 @@ export function ChatThreadScreen({ route }: Props) {
     setSending(true);
     try {
       await messageService.sendMessage(listingId, content);
+      await loadMessages();
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
     } catch (err: any) {
       Alert.alert('Error', err.message);
       setInput(content);
