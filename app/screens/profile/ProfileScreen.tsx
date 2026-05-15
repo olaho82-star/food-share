@@ -91,10 +91,6 @@ export function ProfileScreen() {
               <Text style={styles.statLabel}>Listings</Text>
             </View>
             <View style={styles.statDivider} />
-            <View style={styles.stat}>
-              <Text style={styles.statNum}>£{((user.totalDonationsReceived ?? 0) / 100).toFixed(2)}</Text>
-              <Text style={styles.statLabel}>Received</Text>
-            </View>
           </>
         ) : (
           <>
@@ -110,6 +106,18 @@ export function ProfileScreen() {
           <Text style={styles.statLabel}>Food saved</Text>
         </View>
       </View>
+
+      {isDonor && (
+        <View style={styles.donationCard}>
+          <Text style={styles.donationEmoji}>💛</Text>
+          <View style={styles.donationInfo}>
+            <Text style={styles.donationAmount}>
+              £{((user.totalDonationsReceived ?? 0) / 100).toFixed(2)}
+            </Text>
+            <Text style={styles.donationLabel}>received in voluntary donations</Text>
+          </View>
+        </View>
+      )}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
@@ -236,4 +244,9 @@ const styles = StyleSheet.create({
   supportRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 },
   supportLabel: { fontSize: 13, color: Colors.darkBrown },
   supportChevron: { fontSize: 18, color: Colors.deepAmber },
+  donationCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.primaryYellow, borderRadius: 14, padding: 16, marginBottom: 14, gap: 14 },
+  donationEmoji: { fontSize: 36 },
+  donationInfo: { flex: 1 },
+  donationAmount: { fontSize: 28, fontWeight: '700', color: Colors.darkBrown },
+  donationLabel: { fontSize: 12, color: Colors.deepAmber, marginTop: 2 },
 });
