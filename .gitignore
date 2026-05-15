@@ -30,6 +30,9 @@ Thumbs.db
 *.tsbuildinfo
 server/dist/
 
+# Root package-lock (no real dependencies at root)
+/package-lock.json
+
 # EAS / Google Play submission
 google-service-account.json
 *.p8
