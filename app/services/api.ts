@@ -1,7 +1,7 @@
 import { storage } from '../utils/storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 60000; // 60s to accommodate Render free tier cold starts
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const stored = await storage.loadAuth();

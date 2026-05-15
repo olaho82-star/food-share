@@ -18,14 +18,16 @@ export function MessageInboxScreen() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   async function fetchConversations(refresh = false) {
     if (refresh) setRefreshing(true); else setLoading(true);
+    setError('');
     try {
       const res = await messageService.getConversations();
       setConversations(res.conversations);
-    } catch {
-      // silently fail
+    } catch (err: any) {
+      setError(err.message || 'Failed to load messages');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -46,7 +48,19 @@ export function MessageInboxScreen() {
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator color={Colors.goldenAmber} style={styles.loader} />
+        <View style={styles.loadingBox}>
+          <ActivityIndicator color={Colors.goldenAmber} style={styles.loader} />
+          <Text style={styles.loadingText}>Loading messages…</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.empty}>
+          <Text style={styles.emptyEmoji}>⚠️</Text>
+          <Text style={styles.emptyText}>Could not load messages</Text>
+          <Text style={styles.emptyHint}>{error}</Text>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => fetchConversations()}>
+            <Text style={styles.retryText}>Try again</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <FlatList
           data={conversations}
@@ -113,6 +127,10 @@ const styles = StyleSheet.create({
   badge: { backgroundColor: Colors.goldenAmber, borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5 },
   badgeText: { fontSize: 10, fontWeight: '700', color: Colors.white },
   separator: { height: 0.5, backgroundColor: Colors.amberBorder },
+  loadingBox: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  loadingText: { fontSize: 13, color: Colors.deepAmber, marginTop: 12 },
+  retryBtn: { marginTop: 16, backgroundColor: Colors.primaryYellow, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 24 },
+  retryText: { fontSize: 13, fontWeight: '600', color: Colors.darkBrown },
   empty: { alignItems: 'center', marginTop: 80, paddingHorizontal: 32 },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyText: { fontSize: 16, fontWeight: '600', color: Colors.darkBrown, marginBottom: 8 },
