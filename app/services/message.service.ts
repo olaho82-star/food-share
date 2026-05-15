@@ -17,4 +17,6 @@ export const messageService = {
   getMessages: (listingId: string) => api.get<MessagesResponse>(`/api/messages/${listingId}`),
   sendMessage: (listingId: string, content: string) =>
     api.post<MessageResponse>(`/api/messages/${listingId}`, { content }),
+  deleteMessage: (messageId: string) =>
+    api.delete<{ message: string }>(`/api/messages/${messageId}`),
 };

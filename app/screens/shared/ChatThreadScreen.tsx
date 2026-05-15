@@ -52,6 +52,23 @@ export function ChatThreadScreen({ route }: Props) {
     };
   }, [listingId]);
 
+  async function handleDelete(messageId: string) {
+    Alert.alert('Delete message', 'Remove this message?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete', style: 'destructive',
+        onPress: async () => {
+          try {
+            await messageService.deleteMessage(messageId);
+            await loadMessages();
+          } catch (err: any) {
+            Alert.alert('Error', err.message);
+          }
+        },
+      },
+    ]);
+  }
+
   async function handleSend() {
     const content = input.trim();
     if (!content) return;
@@ -89,14 +106,20 @@ export function ChatThreadScreen({ route }: Props) {
         contentContainerStyle={styles.messageList}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
         renderItem={({ item }) => (
-          <View style={[styles.bubble, isMe(item.senderId) ? styles.bubbleMe : styles.bubbleThem]}>
-            <Text style={[styles.bubbleText, isMe(item.senderId) ? styles.bubbleTextMe : styles.bubbleTextThem]}>
-              {item.content}
-            </Text>
-            <Text style={[styles.bubbleTime, isMe(item.senderId) ? styles.bubbleTimeMe : styles.bubbleTimeThem]}>
-              {formatTime(item.createdAt)}
-            </Text>
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onLongPress={() => isMe(item.senderId) && handleDelete(item._id)}
+            delayLongPress={400}
+          >
+            <View style={[styles.bubble, isMe(item.senderId) ? styles.bubbleMe : styles.bubbleThem]}>
+              <Text style={[styles.bubbleText, isMe(item.senderId) ? styles.bubbleTextMe : styles.bubbleTextThem]}>
+                {item.content}
+              </Text>
+              <Text style={[styles.bubbleTime, isMe(item.senderId) ? styles.bubbleTimeMe : styles.bubbleTimeThem]}>
+                {formatTime(item.createdAt)}
+              </Text>
+            </View>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
           <View style={styles.emptyChat}>

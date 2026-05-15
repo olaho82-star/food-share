@@ -201,9 +201,10 @@ export async function confirmCollection(req: AuthRequest, res: Response) {
   listing.status = 'completed';
   await listing.save();
 
-  await Exchange.findOneAndUpdate(
+  const exchange = await Exchange.findOneAndUpdate(
     { listingId: listing._id },
-    { status: 'completed', recipientConfirmedAt: now }
+    { status: 'completed', recipientConfirmedAt: now },
+    { new: true }
   );
 
   await User.findByIdAndUpdate(req.userId, { $inc: { collectionsCount: 1 } });
@@ -216,5 +217,5 @@ export async function confirmCollection(req: AuthRequest, res: Response) {
     relatedId: String(listing._id),
   });
 
-  res.json({ listing });
+  res.json({ listing, exchange });
 }

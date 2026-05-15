@@ -48,8 +48,14 @@ export function MyClaimsScreen() {
   async function handleConfirm(listingId: string) {
     setConfirming(listingId);
     try {
-      await listingService.confirmCollection(listingId);
+      const res = await listingService.confirmCollection(listingId) as any;
       fetchClaims();
+      if (res?.exchange?._id) {
+        navigation.navigate('RecipientHomeTab', {
+          screen: 'VoluntaryDonation',
+          params: { exchangeId: res.exchange._id },
+        });
+      }
     } catch (err: any) {
       Alert.alert('Error', err.message);
     } finally {

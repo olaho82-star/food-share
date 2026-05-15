@@ -97,3 +97,11 @@ export async function sendMessage(req: AuthRequest, res: Response) {
 
   res.status(201).json({ message });
 }
+
+export async function deleteMessage(req: AuthRequest, res: Response) {
+  const msg = await Message.findById(req.params.messageId);
+  if (!msg) { res.status(404).json({ message: 'Message not found' }); return; }
+  if (String(msg.senderId) !== req.userId) { res.status(403).json({ message: 'You can only delete your own messages' }); return; }
+  await msg.deleteOne();
+  res.json({ message: 'Message deleted' });
+}
