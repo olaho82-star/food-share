@@ -36,61 +36,76 @@ async function getOrCreatePriceId(): Promise<string> {
 }
 
 export async function subscribePremium(req: AuthRequest, res: Response) {
-  const stripe = getStripe();
-  const user = await User.findById(req.userId);
-  if (!user) { res.status(404).json({ message: 'User not found' }); return; }
-  if (user.isPremium) { res.status(400).json({ message: 'Already subscribed' }); return; }
+  try {
+    const stripe = getStripe();
+    const user = await User.findById(req.userId);
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+    if (user.isPremium) { res.status(400).json({ message: 'Already subscribed' }); return; }
 
-  let customerId = user.stripeCustomerId;
-  if (!customerId) {
-    const customer = await stripe.customers.create({ email: user.email, name: user.name });
-    customerId = customer.id;
-    user.stripeCustomerId = customerId;
-    await user.save();
+    let customerId = user.stripeCustomerId;
+    if (!customerId) {
+      const customer = await stripe.customers.create({ email: user.email, name: user.name });
+      customerId = customer.id;
+      user.stripeCustomerId = customerId;
+      await user.save();
+    }
+
+    const priceId = await getOrCreatePriceId();
+    console.log('[Premium] Using price ID:', priceId);
+
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [{ price: priceId }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: { save_default_payment_method: 'on_subscription' },
+      expand: ['latest_invoice.payment_intent'],
+    });
+
+    const invoice = subscription.latest_invoice as Stripe.Invoice;
+    const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent | null;
+
+    if (!paymentIntent?.client_secret) {
+      res.status(500).json({ message: 'Failed to create payment intent. Please try again.' });
+      return;
+    }
+
+    res.json({ clientSecret: paymentIntent.client_secret, subscriptionId: subscription.id });
+  } catch (err: any) {
+    console.error('[Premium] Subscribe error:', err.message);
+    res.status(500).json({ message: err.message || 'Subscription failed. Please try again.' });
   }
-
-  const priceId = await getOrCreatePriceId();
-
-  const subscription = await stripe.subscriptions.create({
-    customer: customerId,
-    items: [{ price: priceId }],
-    payment_behavior: 'default_incomplete',
-    payment_settings: { save_default_payment_method: 'on_subscription' },
-    expand: ['latest_invoice.payment_intent'],
-  });
-
-  const invoice = subscription.latest_invoice as Stripe.Invoice;
-  const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
-
-  res.json({ clientSecret: paymentIntent.client_secret, subscriptionId: subscription.id });
 }
 
 export async function confirmPremium(req: AuthRequest, res: Response) {
-  const { subscriptionId } = req.body;
-  if (!subscriptionId) { res.status(400).json({ message: 'subscriptionId required' }); return; }
-
-  await User.findByIdAndUpdate(req.userId, {
-    isPremium: true,
-    stripeSubscriptionId: subscriptionId,
-    premiumSince: new Date(),
-  });
-
-  res.json({ message: 'Premium activated' });
+  try {
+    const { subscriptionId } = req.body;
+    if (!subscriptionId) { res.status(400).json({ message: 'subscriptionId required' }); return; }
+    await User.findByIdAndUpdate(req.userId, {
+      isPremium: true,
+      stripeSubscriptionId: subscriptionId,
+      premiumSince: new Date(),
+    });
+    res.json({ message: 'Premium activated' });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || 'Failed to confirm premium' });
+  }
 }
 
 export async function cancelPremium(req: AuthRequest, res: Response) {
-  const stripe = getStripe();
-  const user = await User.findById(req.userId);
-  if (!user || !user.stripeSubscriptionId) { res.status(400).json({ message: 'No active subscription' }); return; }
-
-  await stripe.subscriptions.cancel(user.stripeSubscriptionId);
-  await User.findByIdAndUpdate(req.userId, {
-    isPremium: false,
-    stripeSubscriptionId: null,
-    premiumSince: null,
-  });
-
-  res.json({ message: 'Subscription cancelled' });
+  try {
+    const stripe = getStripe();
+    const user = await User.findById(req.userId);
+    if (!user || !user.stripeSubscriptionId) { res.status(400).json({ message: 'No active subscription' }); return; }
+    await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+    await User.findByIdAndUpdate(req.userId, {
+      isPremium: false,
+      stripeSubscriptionId: null,
+      premiumSince: null,
+    });
+    res.json({ message: 'Subscription cancelled' });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || 'Failed to cancel subscription' });
+  }
 }
 
 export async function getPremiumStatus(req: AuthRequest, res: Response) {

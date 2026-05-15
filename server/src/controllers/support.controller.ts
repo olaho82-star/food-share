@@ -9,18 +9,20 @@ function getStripe() {
 }
 
 export async function createSupportIntent(req: AuthRequest, res: Response) {
-  const { amount } = req.body;
-  if (!amount || typeof amount !== 'number' || amount < 100) {
-    res.status(400).json({ message: 'Minimum donation is £1.00' });
-    return;
+  try {
+    const { amount } = req.body;
+    if (!amount || typeof amount !== 'number' || amount < 100) {
+      res.status(400).json({ message: 'Minimum donation is £1.00' });
+      return;
+    }
+    const paymentIntent = await getStripe().paymentIntents.create({
+      amount: Math.round(amount),
+      currency: 'gbp',
+      automatic_payment_methods: { enabled: true },
+      metadata: { type: 'app_support' },
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || 'Failed to create donation' });
   }
-
-  const paymentIntent = await getStripe().paymentIntents.create({
-    amount: Math.round(amount),
-    currency: 'gbp',
-    automatic_payment_methods: { enabled: true },
-    metadata: { type: 'app_support' },
-  });
-
-  res.json({ clientSecret: paymentIntent.client_secret });
 }
