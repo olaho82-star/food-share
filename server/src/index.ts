@@ -42,6 +42,12 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Global error handler — ensures all errors return JSON, never HTML
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[Server error]', err?.message || err);
+  res.status(err?.status || 500).json({ message: err?.message || 'Internal server error' });
+});
+
 mongoose
   .connect(process.env.MONGODB_URI!)
   .then(() => {

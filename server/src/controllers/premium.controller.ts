@@ -50,8 +50,10 @@ export async function subscribePremium(req: AuthRequest, res: Response) {
       await user.save();
     }
 
+    console.log('[Premium] Creating customer for user:', req.userId);
     const priceId = await getOrCreatePriceId();
     console.log('[Premium] Using price ID:', priceId);
+    console.log('[Premium] Creating subscription...');
 
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
