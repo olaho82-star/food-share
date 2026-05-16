@@ -11,67 +11,22 @@ function getStripe() {
 
 const MONTHLY_PRICE_GBP = 999; // £9.99 in pence
 
-async function getOrCreatePriceId(): Promise<string> {
-  const stripe = getStripe();
-  const existing = await stripe.prices.list({ active: true, limit: 100 });
-  const found = existing.data.find(
-    (p) => (p.metadata as Record<string, string>).foodlodge_plan === 'business'
-  );
-  if (found) return found.id;
-
-  const product = await stripe.products.create({
-    name: 'FoodLodge Business Plan',
-    metadata: { foodlodge_plan: 'business' },
-  });
-
-  const price = await stripe.prices.create({
-    product: product.id,
-    unit_amount: MONTHLY_PRICE_GBP,
-    currency: 'gbp',
-    recurring: { interval: 'month' },
-    metadata: { foodlodge_plan: 'business' },
-  });
-
-  return price.id;
-}
-
 export async function subscribePremium(req: AuthRequest, res: Response) {
   try {
-    const stripe = getStripe();
+    console.log('[Premium] Subscribe request from user:', req.userId);
     const user = await User.findById(req.userId);
     if (!user) { res.status(404).json({ message: 'User not found' }); return; }
     if (user.isPremium) { res.status(400).json({ message: 'Already subscribed' }); return; }
 
-    let customerId = user.stripeCustomerId;
-    if (!customerId) {
-      const customer = await stripe.customers.create({ email: user.email, name: user.name });
-      customerId = customer.id;
-      user.stripeCustomerId = customerId;
-      await user.save();
-    }
-
-    console.log('[Premium] Creating customer for user:', req.userId);
-    const priceId = await getOrCreatePriceId();
-    console.log('[Premium] Using price ID:', priceId);
-    console.log('[Premium] Creating subscription...');
-
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ price: priceId }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
-      expand: ['latest_invoice.payment_intent'],
+    const paymentIntent = await getStripe().paymentIntents.create({
+      amount: MONTHLY_PRICE_GBP,
+      currency: 'gbp',
+      automatic_payment_methods: { enabled: true },
+      metadata: { type: 'premium_subscription', userId: String(req.userId) },
     });
 
-    const invoice = subscription.latest_invoice as any;
-    const paymentIntent = invoice?.payment_intent as any;
-
-    if (!paymentIntent?.client_secret) {
-      res.status(500).json({ message: 'Failed to create payment intent. Please try again.' });
-      return;
-    }
-
-    res.json({ clientSecret: paymentIntent.client_secret, subscriptionId: subscription.id });
+    console.log('[Premium] Payment intent created:', paymentIntent.id);
+    res.json({ clientSecret: paymentIntent.client_secret, subscriptionId: paymentIntent.id });
   } catch (err: any) {
     console.error('[Premium] Subscribe error:', err.message);
     res.status(500).json({ message: err.message || 'Subscription failed. Please try again.' });
@@ -80,13 +35,23 @@ export async function subscribePremium(req: AuthRequest, res: Response) {
 
 export async function confirmPremium(req: AuthRequest, res: Response) {
   try {
-    const { subscriptionId } = req.body;
+    const { subscriptionId } = req.body; // paymentIntentId in this simplified flow
     if (!subscriptionId) { res.status(400).json({ message: 'subscriptionId required' }); return; }
+
+    // Verify payment succeeded before granting premium
+    const pi = await getStripe().paymentIntents.retrieve(subscriptionId);
+    if (pi.status !== 'succeeded') {
+      res.status(400).json({ message: 'Payment has not been completed' }); return;
+    }
+
+    const premiumExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
     await User.findByIdAndUpdate(req.userId, {
       isPremium: true,
       stripeSubscriptionId: subscriptionId,
       premiumSince: new Date(),
+      premiumExpiresAt,
     });
+    console.log('[Premium] Activated for user:', req.userId, 'expires:', premiumExpiresAt);
     res.json({ message: 'Premium activated' });
   } catch (err: any) {
     res.status(500).json({ message: err.message || 'Failed to confirm premium' });

@@ -23,6 +23,7 @@ export interface IUser extends Document {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   premiumSince?: Date;
+  premiumExpiresAt?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   comparePassword(candidate: string): Promise<boolean>;
@@ -51,6 +52,7 @@ const userSchema = new Schema<IUser>(
     stripeCustomerId: { type: String },
     stripeSubscriptionId: { type: String },
     premiumSince: { type: Date },
+    premiumExpiresAt: { type: Date },
     passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
   },

@@ -22,6 +22,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Log every incoming request
+app.use((req, _res, next) => {
+  console.log(`[Request] ${req.method} ${req.path}`);
+  next();
+});
+
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 100,
