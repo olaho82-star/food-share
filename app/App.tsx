@@ -20,7 +20,13 @@ export default function App() {
   const { setAuth, setLoading, user } = useAuthStore();
 
   useEffect(() => {
-    Purchases.configure({ apiKey: REVENUECAT_KEY });
+    try {
+      if (REVENUECAT_KEY) {
+        Purchases.configure({ apiKey: REVENUECAT_KEY });
+      }
+    } catch (e) {
+      console.log('RevenueCat init error:', e);
+    }
   }, []);
 
   useEffect(() => {
