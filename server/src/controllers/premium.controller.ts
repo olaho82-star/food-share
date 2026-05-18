@@ -58,6 +58,24 @@ export async function confirmPremium(req: AuthRequest, res: Response) {
   }
 }
 
+export async function confirmIAP(req: AuthRequest, res: Response) {
+  try {
+    const { revenueCatUserId } = req.body;
+    if (!revenueCatUserId) { res.status(400).json({ message: 'revenueCatUserId required' }); return; }
+    const premiumExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await User.findByIdAndUpdate(req.userId, {
+      isPremium: true,
+      stripeSubscriptionId: revenueCatUserId,
+      premiumSince: new Date(),
+      premiumExpiresAt,
+    });
+    console.log('[Premium] IAP confirmed for user:', req.userId);
+    res.json({ message: 'Premium activated' });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || 'Failed to confirm IAP' });
+  }
+}
+
 export async function cancelPremium(req: AuthRequest, res: Response) {
   try {
     const stripe = getStripe();

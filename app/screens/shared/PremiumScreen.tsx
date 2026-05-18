@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { useStripe } from '@stripe/stripe-react-native';
+import Purchases, { PurchasesPackage } from 'react-native-purchases';
 import { Colors } from '../../constants/colors';
 import { premiumService } from '../../services/premium.service';
 import { useAuthStore } from '../../store/authStore';
@@ -13,73 +13,94 @@ const FEATURES = [
   { icon: '💼', title: 'Business Profile', desc: 'Showcase your business commitment to reducing food waste.' },
 ];
 
+const PRODUCT_ID = 'app.foodlodge.business.monthly';
+
 export function PremiumScreen({ navigation }: any) {
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const { user, setAuth, tokens } = useAuthStore();
-  const [loading, setLoading] = useState(false);
+  const [pkg, setPkg] = useState<PurchasesPackage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
 
   const isPremium = (user as any)?.isPremium;
 
+  useEffect(() => {
+    async function loadOfferings() {
+      try {
+        const offerings = await Purchases.getOfferings();
+        const packages = offerings.current?.availablePackages ?? [];
+        const found = packages.find((p) => p.product.identifier === PRODUCT_ID);
+        setPkg(found ?? packages[0] ?? null);
+      } catch (err: any) {
+        console.log('RevenueCat offerings error:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadOfferings();
+  }, []);
+
   async function handleSubscribe() {
-    setLoading(true);
+    if (!pkg) { Alert.alert('Unavailable', 'Subscription is not available right now. Please try again later.'); return; }
+    setPurchasing(true);
     try {
-      const { clientSecret, subscriptionId } = await premiumService.subscribe(999);
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
+      const isActive = customerInfo.entitlements.active['business'] !== undefined
+        || Object.keys(customerInfo.activeSubscriptions).length > 0;
 
-      const { error: initError } = await initPaymentSheet({
-        paymentIntentClientSecret: clientSecret,
-        merchantDisplayName: 'FoodLodge',
-        style: 'automatic',
-      });
-      if (initError) throw new Error(initError.message);
-
-      const { error: presentError } = await presentPaymentSheet();
-      if (presentError) {
-        if (presentError.code !== 'Canceled') throw new Error(presentError.message);
-        return;
+      if (isActive) {
+        await premiumService.confirmIAP(customerInfo.originalAppUserId);
+        if (user && tokens) {
+          setAuth({ ...user, isPremium: true } as any, tokens);
+        }
+        Alert.alert('Welcome to Business! 🎉', 'Your premium subscription is now active. Your listings will appear at the top.');
+        navigation.goBack();
       }
-
-      await premiumService.confirm(subscriptionId);
-
-      if (user && tokens) {
-        setAuth({ ...user, isPremium: true } as any, tokens);
-      }
-
-      Alert.alert('Welcome to Business! 🎉', 'Your premium subscription is now active. Your listings will appear at the top.');
-      navigation.goBack();
     } catch (err: any) {
-      Alert.alert('Subscription failed', err.message);
+      if (err.userCancelled) return;
+      Alert.alert('Purchase failed', err.message);
     } finally {
-      setLoading(false);
+      setPurchasing(false);
+    }
+  }
+
+  async function handleRestore() {
+    setPurchasing(true);
+    try {
+      const customerInfo = await Purchases.restorePurchases();
+      const isActive = Object.keys(customerInfo.activeSubscriptions).length > 0;
+      if (isActive) {
+        await premiumService.confirmIAP(customerInfo.originalAppUserId);
+        if (user && tokens) {
+          setAuth({ ...user, isPremium: true } as any, tokens);
+        }
+        Alert.alert('Restored!', 'Your Business subscription has been restored.');
+        navigation.goBack();
+      } else {
+        Alert.alert('No subscription found', 'No active Business subscription was found for your Apple ID.');
+      }
+    } catch (err: any) {
+      Alert.alert('Restore failed', err.message);
+    } finally {
+      setPurchasing(false);
     }
   }
 
   async function handleCancel() {
-    Alert.alert('Cancel subscription', 'Are you sure? You will lose all premium benefits.', [
-      { text: 'Keep premium', style: 'cancel' },
-      {
-        text: 'Cancel subscription', style: 'destructive',
-        onPress: async () => {
-          try {
-            await premiumService.cancel();
-            if (user && tokens) {
-              setAuth({ ...user, isPremium: false } as any, tokens);
-            }
-            Alert.alert('Cancelled', 'Your subscription has been cancelled.');
-            navigation.goBack();
-          } catch (err: any) {
-            Alert.alert('Error', err.message);
-          }
-        },
-      },
-    ]);
+    Alert.alert(
+      'Cancel subscription',
+      'To cancel, go to iPhone Settings → Apple ID → Subscriptions → FoodLodge Business → Cancel.',
+      [{ text: 'OK' }]
+    );
   }
+
+  const priceText = pkg ? pkg.product.priceString + '/month' : '£9.99/month';
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       <View style={styles.hero}>
         <Text style={styles.heroEmoji}>⭐</Text>
         <Text style={styles.heroTitle}>FoodLodge Business</Text>
-        <Text style={styles.heroPrice}>£9.99 / month</Text>
+        <Text style={styles.heroPrice}>{priceText}</Text>
         <Text style={styles.heroSub}>Help reduce food waste at scale</Text>
       </View>
 
@@ -95,22 +116,31 @@ export function PremiumScreen({ navigation }: any) {
         ))}
       </View>
 
-      {isPremium ? (
+      {loading ? (
+        <ActivityIndicator color={Colors.goldenAmber} style={{ marginTop: 24 }} />
+      ) : isPremium ? (
         <View style={styles.activeBox}>
           <Text style={styles.activeText}>✅ Business plan active</Text>
           <TouchableOpacity onPress={handleCancel}>
-            <Text style={styles.cancelLink}>Cancel subscription</Text>
+            <Text style={styles.cancelLink}>Manage subscription</Text>
           </TouchableOpacity>
         </View>
-      ) : loading ? (
+      ) : purchasing ? (
         <ActivityIndicator color={Colors.goldenAmber} style={{ marginTop: 24 }} />
       ) : (
-        <TouchableOpacity style={styles.subscribeBtn} onPress={handleSubscribe}>
-          <Text style={styles.subscribeBtnText}>Subscribe for £9.99/month</Text>
-        </TouchableOpacity>
+        <View style={styles.actions}>
+          <TouchableOpacity style={styles.subscribeBtn} onPress={handleSubscribe}>
+            <Text style={styles.subscribeBtnText}>Subscribe for {priceText}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.restoreBtn} onPress={handleRestore}>
+            <Text style={styles.restoreBtnText}>Restore purchases</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
-      <Text style={styles.note}>Cancel anytime. No hidden fees.</Text>
+      <Text style={styles.note}>
+        Subscription auto-renews monthly. Cancel anytime in iPhone Settings → Subscriptions.
+      </Text>
     </ScrollView>
   );
 }
@@ -129,10 +159,13 @@ const styles = StyleSheet.create({
   featureText: { flex: 1 },
   featureTitle: { fontSize: 14, fontWeight: '600', color: Colors.darkBrown, marginBottom: 2 },
   featureDesc: { fontSize: 12, color: Colors.deepAmber, lineHeight: 18 },
-  subscribeBtn: { backgroundColor: Colors.darkBrown, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
+  actions: { gap: 12, marginBottom: 12 },
+  subscribeBtn: { backgroundColor: Colors.darkBrown, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
   subscribeBtnText: { fontSize: 16, fontWeight: '700', color: Colors.primaryYellow },
+  restoreBtn: { alignItems: 'center', paddingVertical: 10 },
+  restoreBtnText: { fontSize: 13, color: Colors.deepAmber, textDecorationLine: 'underline' },
   activeBox: { backgroundColor: Colors.paleLemon, borderRadius: 14, padding: 16, alignItems: 'center', gap: 10, marginBottom: 12 },
   activeText: { fontSize: 15, fontWeight: '600', color: Colors.darkBrown },
-  cancelLink: { fontSize: 13, color: Colors.darkRed, textDecorationLine: 'underline' },
-  note: { fontSize: 12, color: Colors.deepAmber, textAlign: 'center' },
+  cancelLink: { fontSize: 13, color: Colors.goldenAmber, textDecorationLine: 'underline' },
+  note: { fontSize: 11, color: Colors.deepAmber, textAlign: 'center', lineHeight: 16 },
 });

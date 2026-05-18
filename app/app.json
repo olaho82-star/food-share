@@ -62,7 +62,8 @@
           "merchantIdentifier": "merchant.app.foodlodge",
           "enableGooglePay": false
         }
-      ]
+      ],
+      "react-native-purchases"
     ]
   }
 }

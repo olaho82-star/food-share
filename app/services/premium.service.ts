@@ -5,5 +5,6 @@ export const premiumService = {
   subscribe: (amount: number) => api.post<{ clientSecret: string; subscriptionId: string }>('/api/premium/subscribe', { amount }),
   confirm: (subscriptionId: string) => api.post<{ message: string }>('/api/premium/confirm', { subscriptionId }),
   cancel: () => api.post<{ message: string }>('/api/premium/cancel', {}),
+  confirmIAP: (revenueCatUserId: string) => api.post<{ message: string }>('/api/premium/confirm-iap', { revenueCatUserId }),
   createSupportIntent: (amount: number) => api.post<{ clientSecret: string }>('/api/support/donate', { amount }),
 };
