@@ -36,6 +36,7 @@ export type ProfileStackParamList = {
   CommunityGuidelines: undefined;
   Premium: undefined;
   Support: undefined;
+  DeleteAccount: undefined;
 };
 
 export type DonorTabParamList = {

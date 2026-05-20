@@ -20,6 +20,7 @@ import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { CommunityGuidelinesScreen } from '../screens/profile/CommunityGuidelinesScreen';
 import { PremiumScreen } from '../screens/shared/PremiumScreen';
 import { SupportScreen } from '../screens/shared/SupportScreen';
+import { DeleteAccountScreen } from '../screens/profile/DeleteAccountScreen';
 
 const Tab = createBottomTabNavigator<DonorTabParamList>();
 const HomeStack = createNativeStackNavigator<DonorHomeStackParamList>();
@@ -56,6 +57,7 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen name="CommunityGuidelines" component={CommunityGuidelinesScreen} options={{ title: 'Community Guidelines' }} />
       <ProfileStack.Screen name="Premium" component={PremiumScreen} options={{ title: 'Business Plan' }} />
       <ProfileStack.Screen name="Support" component={SupportScreen} options={{ title: 'Support FoodLodge' }} />
+      <ProfileStack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={{ title: 'Delete Account' }} />
     </ProfileStack.Navigator>
   );
 }

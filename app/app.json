@@ -17,7 +17,8 @@
         "googleMapsApiKey": "AIzaSyBXwuaCqvL03XGToZof3tfcRljgAAUITKI"
       },
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "FoodLodge uses your location to show food listings near you.",
+        "NSLocationWhenInUseUsageDescription": "FoodLodge uses your location to show nearby food listings on the map. For example, if you are in Hackney, you will see available food listings near you.",
+        "NSPhotoLibraryUsageDescription": "FoodLodge needs access to your photo library so you can select a photo of the food you are donating. For example, you can choose a photo of bread or vegetables to add to your listing.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

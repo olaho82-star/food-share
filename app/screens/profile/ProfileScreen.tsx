@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
@@ -186,24 +186,6 @@ export function ProfileScreen() {
         </>
       )}
 
-      {isDonor && (
-        <TouchableOpacity
-          style={[(user as any).isPremium ? styles.premiumActiveBanner : styles.premiumBanner]}
-          onPress={() => navigation.navigate('Premium')}
-        >
-          <Text style={styles.premiumBannerEmoji}>{(user as any).isPremium ? '⭐' : '🚀'}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.premiumBannerTitle}>
-              {(user as any).isPremium ? 'Business Plan Active' : 'Upgrade to Business'}
-            </Text>
-            <Text style={styles.premiumBannerSub}>
-              {(user as any).isPremium ? 'Manage your subscription' : 'Priority listings · Verified badge · £9.99/mo'}
-            </Text>
-          </View>
-          <Text style={styles.supportChevron}>›</Text>
-        </TouchableOpacity>
-      )}
-
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
         <TouchableOpacity style={styles.supportRow} onPress={() => navigation.navigate('CommunityGuidelines')}>
@@ -211,13 +193,13 @@ export function ProfileScreen() {
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
         <Divider />
-        <TouchableOpacity style={styles.supportRow} onPress={() => navigation.navigate('Support')}>
-          <Text style={styles.supportLabel}>💚 Support FoodLodge</Text>
+        <TouchableOpacity style={styles.supportRow} onPress={() => Linking.openURL('mailto:hello@foodlodge.app')}>
+          <Text style={styles.supportLabel}>Contact support</Text>
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
         <Divider />
-        <TouchableOpacity style={styles.supportRow}>
-          <Text style={styles.supportLabel}>Contact support</Text>
+        <TouchableOpacity style={styles.supportRow} onPress={() => navigation.navigate('DeleteAccount')}>
+          <Text style={[styles.supportLabel, { color: Colors.darkRed }]}>Delete account</Text>
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
       </View>
