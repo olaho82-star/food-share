@@ -4,45 +4,245 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FoodLodge — Connecting surplus food with people who need it</title>
+  <meta name="description" content="FoodLodge connects individuals and businesses with surplus food to people in need, reducing food waste across London. Free to use." />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fffbeb; color: #78350f; text-align: center; }
-    header { background: #f5c842; padding: 60px 24px; border-bottom: 2px solid #d4a017; }
-    header h1 { font-size: 40px; font-weight: 700; color: #78350f; }
-    header p { font-size: 18px; color: #92400e; margin-top: 12px; }
-    main { max-width: 600px; margin: 0 auto; padding: 60px 24px; }
-    .badge { display: inline-block; background: #f5c842; border: 1.5px solid #d4a017; border-radius: 20px; padding: 8px 20px; font-size: 14px; font-weight: 600; color: #78350f; margin: 8px; }
-    h2 { font-size: 22px; font-weight: 600; margin: 40px 0 16px; }
-    p { font-size: 15px; color: #92400e; line-height: 1.7; margin-bottom: 12px; }
-    a { color: #d4a017; text-decoration: none; font-weight: 600; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fffbeb; color: #78350f; }
+    a { color: #d4a017; text-decoration: none; }
     a:hover { text-decoration: underline; }
-    footer { padding: 32px 24px; font-size: 12px; color: #92400e; border-top: 1px solid #fde68a; }
+
+    /* NAV */
+    nav { background: #f5c842; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d4a017; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-size: 22px; font-weight: 700; color: #78350f; }
+    .nav-logo span { font-weight: 300; color: #92400e; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: #78350f; }
+
+    /* HERO */
+    .hero { background: #f5c842; padding: 80px 24px 60px; text-align: center; border-bottom: 2px solid #d4a017; }
+    .hero-emoji { font-size: 72px; margin-bottom: 20px; }
+    .hero h1 { font-size: 42px; font-weight: 700; color: #78350f; line-height: 1.2; margin-bottom: 16px; }
+    .hero h1 span { font-weight: 300; color: #92400e; }
+    .hero p { font-size: 18px; color: #92400e; max-width: 560px; margin: 0 auto 32px; line-height: 1.6; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: #78350f; color: #f5c842; padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 700; display: inline-block; }
+    .btn-primary:hover { background: #92400e; text-decoration: none; }
+    .btn-outline { border: 2px solid #78350f; color: #78350f; padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 600; display: inline-block; }
+    .btn-outline:hover { background: rgba(120,53,15,0.08); text-decoration: none; }
+    .badge-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+    .badge { background: rgba(255,255,255,0.6); border: 1px solid #d4a017; border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: #78350f; }
+
+    /* HOW IT WORKS */
+    .section { padding: 72px 24px; max-width: 1000px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #d4a017; margin-bottom: 12px; }
+    .section h2 { font-size: 32px; font-weight: 700; color: #78350f; margin-bottom: 16px; }
+    .section p.intro { font-size: 16px; color: #92400e; max-width: 600px; line-height: 1.7; margin-bottom: 48px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .step { background: #fff; border: 1.5px solid #fde68a; border-radius: 16px; padding: 24px; }
+    .step-num { width: 36px; height: 36px; background: #f5c842; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #78350f; margin-bottom: 14px; }
+    .step h3 { font-size: 16px; font-weight: 600; color: #78350f; margin-bottom: 8px; }
+    .step p { font-size: 13px; color: #92400e; line-height: 1.6; }
+
+    /* ROLES */
+    .roles { background: #fef9c3; border-top: 1px solid #fde68a; border-bottom: 1px solid #fde68a; padding: 72px 24px; }
+    .roles-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .role-card { background: #fff; border: 1.5px solid #fde68a; border-radius: 20px; padding: 32px; }
+    .role-emoji { font-size: 44px; margin-bottom: 16px; }
+    .role-card h3 { font-size: 22px; font-weight: 700; color: #78350f; margin-bottom: 12px; }
+    .role-card p { font-size: 14px; color: #92400e; line-height: 1.7; margin-bottom: 16px; }
+    .role-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .role-list li { font-size: 13px; color: #78350f; display: flex; gap: 8px; }
+    .role-list li::before { content: "✓"; color: #d4a017; font-weight: 700; flex-shrink: 0; }
+
+    /* FEATURES */
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 48px; }
+    .feature { display: flex; gap: 14px; align-items: flex-start; }
+    .feature-icon { font-size: 28px; flex-shrink: 0; }
+    .feature h4 { font-size: 14px; font-weight: 600; color: #78350f; margin-bottom: 4px; }
+    .feature p { font-size: 12px; color: #92400e; line-height: 1.5; }
+
+    /* CTA */
+    .cta { background: #f5c842; border-top: 2px solid #d4a017; padding: 72px 24px; text-align: center; }
+    .cta h2 { font-size: 32px; font-weight: 700; color: #78350f; margin-bottom: 12px; }
+    .cta p { font-size: 16px; color: #92400e; margin-bottom: 32px; }
+
+    /* FOOTER */
+    footer { background: #78350f; color: #fef9c3; padding: 40px 24px; text-align: center; }
+    footer p { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
+    .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+    .footer-links a { font-size: 13px; color: #f5c842; }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 30px; }
+      .roles-inner { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🍱 FoodLodge</h1>
-    <p>Connecting surplus food with people who need it</p>
-  </header>
-  <main>
-    <div>
-      <span class="badge">🗺 London</span>
-      <span class="badge">🍞 Free Food</span>
-      <span class="badge">🤝 Community</span>
+
+  <nav>
+    <div class="nav-logo">Food<span>Lodge</span></div>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#for-donors">For donors</a>
+      <a href="#for-recipients">For recipients</a>
+      <a href="mailto:hello@foodlodge.com">Contact</a>
     </div>
+  </nav>
 
-    <h2>About FoodLodge</h2>
-    <p>FoodLodge is a free mobile app that connects individuals and businesses with surplus food to people in need, reducing food waste and supporting communities across London.</p>
-    <p>Donors post surplus food listings with photos and pick-up times. Recipients browse a live map, claim what they need, and collect for free.</p>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-emoji">🍱</div>
+    <h1>Surplus food,<br><span>shared with London</span></h1>
+    <p>FoodLodge connects people and businesses who have surplus food with neighbours who need it — completely free, across London.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-primary">📱 Download on the App Store</a>
+      <a href="#how-it-works" class="btn-outline">How it works</a>
+    </div>
+    <div class="badge-row">
+      <span class="badge">🗺 London-wide</span>
+      <span class="badge">🍞 Always free</span>
+      <span class="badge">🤝 Community powered</span>
+      <span class="badge">♻️ Reduce food waste</span>
+    </div>
+  </section>
 
-    <h2>Legal</h2>
-    <p><a href="privacy-policy.html">Privacy Policy</a></p>
+  <!-- HOW IT WORKS -->
+  <div id="how-it-works">
+    <div class="section">
+      <div class="section-label">Simple process</div>
+      <h2>How FoodLodge works</h2>
+      <p class="intro">Whether you have food to give or food to find, FoodLodge makes it easy in just a few steps.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Sign up & choose your role</h3>
+          <p>Create a free account as a Donor (you have food to share) or a Recipient (you're looking for food).</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Post or browse listings</h3>
+          <p>Donors post food with a photo and pick-up window. Recipients browse a live map of available food nearby.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Claim and collect</h3>
+          <p>Recipients claim a listing and message the donor. The full address is revealed after claiming. Collect within the window.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Confirm and rate</h3>
+          <p>Both sides confirm the exchange. Leave a rating. Every completed exchange helps reduce food waste in London.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <h2>Contact</h2>
-    <p>For support or enquiries: <a href="mailto:hello@foodlodge.app">hello@foodlodge.app</a></p>
-  </main>
+  <!-- ROLES -->
+  <section class="roles">
+    <div class="roles-inner">
+      <div class="role-card" id="for-donors">
+        <div class="role-emoji">🍞</div>
+        <h3>For Donors</h3>
+        <p>Have surplus food from your kitchen, restaurant, cafe or event? Post it and let someone in your community benefit.</p>
+        <ul class="role-list">
+          <li>Post a listing in under 2 minutes</li>
+          <li>Set your pick-up window and location</li>
+          <li>Get notified when someone claims</li>
+          <li>Message recipients directly in-app</li>
+          <li>Track your food saved and donations received</li>
+          <li>Enable optional thank-you donations</li>
+        </ul>
+      </div>
+      <div class="role-card" id="for-recipients">
+        <div class="role-emoji">🙌</div>
+        <h3>For Recipients</h3>
+        <p>Browse available food near you on a live map. Claim what you need and collect for free — no questions asked.</p>
+        <ul class="role-list">
+          <li>Browse a live map of food near you</li>
+          <li>Filter by category (bakery, fruit & veg, etc.)</li>
+          <li>Claim a listing with one tap</li>
+          <li>Full address revealed after claiming</li>
+          <li>Message donors securely in-app</li>
+          <li>Confirm collection and leave a rating</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <div class="section">
+    <div class="section-label">Features</div>
+    <h2>Everything you need</h2>
+    <p class="intro">FoodLodge is built around safety, privacy and simplicity.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🗺</div>
+        <div>
+          <h4>Live map</h4>
+          <p>See available food near you in real time, scoped to London boroughs.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔔</div>
+        <div>
+          <h4>Push notifications</h4>
+          <p>Instant alerts for claims, messages, collection reminders and nearby food.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div>
+          <h4>In-app messaging</h4>
+          <p>Communicate securely without sharing personal contact details.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div>
+          <h4>Address privacy</h4>
+          <p>Full pick-up address only revealed to the recipient after they claim.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">✅</div>
+        <div>
+          <h4>Two-way confirmation</h4>
+          <p>Both donor and recipient confirm the exchange for a complete, trusted record.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🛡️</div>
+        <div>
+          <h4>Food safety</h4>
+          <p>Safety reminders on every listing. Community guidelines keep standards high.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Join FoodLodge today</h2>
+    <p>Free to download. Free to use. Available on iOS.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-primary">📱 Download on the App Store</a>
+      <a href="mailto:hello@foodlodge.com" class="btn-outline">Get in touch</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer>
-    &copy; 2026 FoodLodge. All rights reserved.
+    <p>🍱 FoodLodge — Connecting surplus food with people who need it</p>
+    <p>London, United Kingdom</p>
+    <div class="footer-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="mailto:hello@foodlodge.com">Contact</a>
+      <a href="mailto:hello@foodlodge.com">Support</a>
+    </div>
+    <p style="margin-top:20px; font-size:12px; opacity:0.5;">&copy; 2026 FoodLodge. All rights reserved.</p>
   </footer>
+
 </body>
 </html>
