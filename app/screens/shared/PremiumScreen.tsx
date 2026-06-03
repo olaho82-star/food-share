@@ -16,8 +16,8 @@ export function PremiumScreen({ }: any) {
   const isPremium = (user as any)?.isPremium;
 
   function handleContact() {
-    Linking.openURL('mailto:hello@foodlodge.app?subject=FoodLodge Business Plan&body=Hi, I would like to subscribe to the FoodLodge Business Plan (£9.99/month) for my business.')
-      .catch(() => Alert.alert('Could not open email', 'Please email us at hello@foodlodge.app to subscribe.'));
+    Linking.openURL('mailto:hello@foodlodge.co.uk?subject=FoodLodge Business Plan&body=Hi, I would like to subscribe to the FoodLodge Business Plan (£9.99/month) for my business.')
+      .catch(() => Alert.alert('Could not open email', 'Please email us at hello@foodlodge.co.uk to subscribe.'));
   }
 
   return (
@@ -25,7 +25,6 @@ export function PremiumScreen({ }: any) {
       <View style={styles.hero}>
         <Text style={styles.heroEmoji}>⭐</Text>
         <Text style={styles.heroTitle}>FoodLodge Business</Text>
-        <Text style={styles.heroPrice}>£9.99 / month</Text>
         <Text style={styles.heroSub}>For restaurants, cafes, supermarkets & caterers</Text>
       </View>
 
@@ -44,22 +43,22 @@ export function PremiumScreen({ }: any) {
       {isPremium ? (
         <View style={styles.activeBox}>
           <Text style={styles.activeText}>✅ Business plan active</Text>
-          <Text style={styles.activeNote}>To manage your subscription, contact hello@foodlodge.app</Text>
+          <Text style={styles.activeNote}>To manage your subscription, contact hello@foodlodge.co.uk</Text>
         </View>
       ) : (
         <View style={styles.ctaBox}>
           <Text style={styles.ctaTitle}>Ready to upgrade?</Text>
           <Text style={styles.ctaBody}>
-            FoodLodge Business is available for businesses. Tap below to contact us and get set up.
+            FoodLodge Business is designed for restaurants, cafes and food businesses. Contact us to find out more and get set up.
           </Text>
           <TouchableOpacity style={styles.contactBtn} onPress={handleContact}>
-            <Text style={styles.contactBtnText}>📧 Contact us to subscribe</Text>
+            <Text style={styles.contactBtnText}>📧 Contact us to find out more</Text>
           </TouchableOpacity>
           <Text style={styles.ctaNote}>We'll get back to you within 24 hours.</Text>
         </View>
       )}
 
-      <Text style={styles.note}>£9.99/month. Cancel anytime by contacting hello@foodlodge.app</Text>
+      <Text style={styles.note}>FoodLodge Business is a service for food businesses. Contact us at hello@foodlodge.co.uk to learn more.</Text>
     </ScrollView>
   );
 }
