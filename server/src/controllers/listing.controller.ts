@@ -70,17 +70,9 @@ export async function getNearbyListings(_req: AuthRequest, res: Response) {
   const listings = await Listing.find({ status: 'available' })
     .select('-fullAddress')
     .sort({ createdAt: -1 })
-    .limit(100)
-    .populate('donorId', 'isPremium');
+    .limit(100);
 
-  // Sort premium donor listings to the top
-  const sorted = [...listings].sort((a, b) => {
-    const aP = (a.donorId as any)?.isPremium ? 1 : 0;
-    const bP = (b.donorId as any)?.isPremium ? 1 : 0;
-    return bP - aP;
-  });
-
-  res.json({ listings: sorted });
+  res.json({ listings });
 }
 
 export async function getListing(req: AuthRequest, res: Response) {

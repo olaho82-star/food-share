@@ -193,7 +193,7 @@ export function ProfileScreen() {
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
         <Divider />
-        <TouchableOpacity style={styles.supportRow} onPress={() => Linking.openURL('mailto:hello@foodlodge.app')}>
+        <TouchableOpacity style={styles.supportRow} onPress={() => Linking.openURL('mailto:hello@foodlodge.co.uk')}>
           <Text style={styles.supportLabel}>Contact support</Text>
           <Text style={styles.supportChevron}>›</Text>
         </TouchableOpacity>
