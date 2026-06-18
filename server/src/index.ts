@@ -13,6 +13,7 @@ import notificationRoutes from './routes/notification.routes';
 import userRoutes from './routes/user.routes';
 import premiumRoutes from './routes/premium.routes';
 import supportRoutes from './routes/support.routes';
+import adminRoutes from './routes/admin.routes';
 import { startScheduler } from './services/scheduler';
 import { initFirebase } from './services/firebase';
 
@@ -43,6 +44,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/premium', premiumRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
